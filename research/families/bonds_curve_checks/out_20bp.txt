@@ -1,0 +1,138 @@
+TNX 1962-01-02 2026-10-09 IRX 1960-01-04 2026-10-09
+COST 0.002
+
+== Voll
+CARRY_LS   {'cagr': np.float64(6.75), 'vol': np.float64(7.7), 'sharpe': np.float64(0.32), 'maxdd': np.float64(-25.6), 'inv': 100, 'start': datetime.date(1972, 4, 4)}
+MOM_LS     {'cagr': np.float64(4.82), 'vol': np.float64(6.2), 'sharpe': np.float64(0.07), 'maxdd': np.float64(-24.3), 'inv': 69, 'start': datetime.date(1963, 4, 2)}
+EQH_LS     {'cagr': np.float64(5.3), 'vol': np.float64(5.7), 'sharpe': np.float64(0.17), 'maxdd': np.float64(-29.9), 'inv': 48, 'start': datetime.date(1972, 4, 4)}
+CARRY_LO   {'cagr': np.float64(6.35), 'vol': np.float64(6.0), 'sharpe': np.float64(0.33), 'maxdd': np.float64(-16.9), 'inv': 59, 'start': datetime.date(1972, 4, 4)}
+MOM_LO     {'cagr': np.float64(4.85), 'vol': np.float64(4.5), 'sharpe': np.float64(0.09), 'maxdd': np.float64(-15.1), 'inv': 39, 'start': datetime.date(1963, 4, 2)}
+EQH_LO     {'cagr': np.float64(5.44), 'vol': np.float64(4.2), 'sharpe': np.float64(0.24), 'maxdd': np.float64(-14.5), 'inv': 24, 'start': datetime.date(1972, 4, 4)}
+COMBO2_LS  {'cagr': np.float64(6.03), 'vol': np.float64(5.4), 'sharpe': np.float64(0.3), 'maxdd': np.float64(-15.1), 'inv': 53, 'start': datetime.date(1972, 4, 4)}
+COMBO3_LS  {'cagr': np.float64(6.13), 'vol': np.float64(4.1), 'sharpe': np.float64(0.4), 'maxdd': np.float64(-12.8), 'inv': 40, 'start': datetime.date(1972, 4, 4)}
+COMBO2_LO  {'cagr': np.float64(5.74), 'vol': np.float64(4.7), 'sharpe': np.float64(0.28), 'maxdd': np.float64(-13.5), 'inv': 50, 'start': datetime.date(1972, 4, 4)}
+COMBO3_LO  {'cagr': np.float64(5.73), 'vol': np.float64(4.0), 'sharpe': np.float64(0.32), 'maxdd': np.float64(-10.8), 'inv': 41, 'start': datetime.date(1972, 4, 4)}
+BH10       {'cagr': np.float64(5.69), 'vol': np.float64(7.7), 'sharpe': np.float64(0.19), 'maxdd': np.float64(-28.3), 'inv': 100, 'start': datetime.date(1972, 4, 4)}
+
+== 1972-2018 (Newfound-Fenster)
+CARRY_LS   {'cagr': np.float64(7.67), 'vol': np.float64(7.7), 'sharpe': np.float64(0.39), 'maxdd': np.float64(-21.9), 'inv': 100, 'start': datetime.date(1972, 4, 4)}
+MOM_LS     {'cagr': np.float64(5.21), 'vol': np.float64(6.5), 'sharpe': np.float64(0.1), 'maxdd': np.float64(-23.2), 'inv': 70, 'start': datetime.date(1972, 1, 3)}
+EQH_LS     {'cagr': np.float64(5.78), 'vol': np.float64(5.6), 'sharpe': np.float64(0.2), 'maxdd': np.float64(-18.5), 'inv': 46, 'start': datetime.date(1972, 4, 4)}
+CARRY_LO   {'cagr': np.float64(7.3), 'vol': np.float64(6.2), 'sharpe': np.float64(0.41), 'maxdd': np.float64(-14.5), 'inv': 63, 'start': datetime.date(1972, 4, 4)}
+MOM_LO     {'cagr': np.float64(5.18), 'vol': np.float64(4.9), 'sharpe': np.float64(0.11), 'maxdd': np.float64(-15.1), 'inv': 43, 'start': datetime.date(1972, 1, 3)}
+EQH_LO     {'cagr': np.float64(6.07), 'vol': np.float64(4.0), 'sharpe': np.float64(0.33), 'maxdd': np.float64(-10.8), 'inv': 23, 'start': datetime.date(1972, 4, 4)}
+COMBO2_LS  {'cagr': np.float64(6.65), 'vol': np.float64(5.5), 'sharpe': np.float64(0.35), 'maxdd': np.float64(-15.1), 'inv': 56, 'start': datetime.date(1972, 4, 4)}
+COMBO3_LS  {'cagr': np.float64(6.68), 'vol': np.float64(4.2), 'sharpe': np.float64(0.45), 'maxdd': np.float64(-12.8), 'inv': 41, 'start': datetime.date(1972, 4, 4)}
+COMBO2_LO  {'cagr': np.float64(6.35), 'vol': np.float64(4.9), 'sharpe': np.float64(0.33), 'maxdd': np.float64(-13.5), 'inv': 53, 'start': datetime.date(1972, 4, 4)}
+COMBO3_LO  {'cagr': np.float64(6.35), 'vol': np.float64(4.1), 'sharpe': np.float64(0.39), 'maxdd': np.float64(-10.5), 'inv': 43, 'start': datetime.date(1972, 4, 4)}
+BH10       {'cagr': np.float64(6.71), 'vol': np.float64(7.7), 'sharpe': np.float64(0.28), 'maxdd': np.float64(-20.8), 'inv': 100, 'start': datetime.date(1972, 4, 4)}
+
+== 1972-1981 Zinsanstieg
+CARRY_LS   {'cagr': np.float64(10.04), 'vol': np.float64(8.0), 'sharpe': np.float64(0.25), 'maxdd': np.float64(-21.9), 'inv': 100, 'start': datetime.date(1972, 4, 4)}
+MOM_LS     {'cagr': np.float64(10.54), 'vol': np.float64(6.7), 'sharpe': np.float64(0.37), 'maxdd': np.float64(-8.1), 'inv': 73, 'start': datetime.date(1972, 1, 3)}
+EQH_LS     {'cagr': np.float64(11.55), 'vol': np.float64(5.8), 'sharpe': np.float64(0.55), 'maxdd': np.float64(-8.1), 'inv': 48, 'start': datetime.date(1972, 4, 4)}
+CARRY_LO   {'cagr': np.float64(6.76), 'vol': np.float64(4.7), 'sharpe': np.float64(-0.26), 'maxdd': np.float64(-12.2), 'inv': 58, 'start': datetime.date(1972, 4, 4)}
+MOM_LO     {'cagr': np.float64(6.42), 'vol': np.float64(2.5), 'sharpe': np.float64(-0.59), 'maxdd': np.float64(-4.6), 'inv': 24, 'start': datetime.date(1972, 1, 3)}
+EQH_LO     {'cagr': np.float64(8.0), 'vol': np.float64(3.5), 'sharpe': np.float64(-0.03), 'maxdd': np.float64(-4.8), 'inv': 24, 'start': datetime.date(1972, 4, 4)}
+COMBO2_LS  {'cagr': np.float64(10.62), 'vol': np.float64(6.4), 'sharpe': np.float64(0.38), 'maxdd': np.float64(-10.4), 'inv': 62, 'start': datetime.date(1972, 4, 4)}
+COMBO3_LS  {'cagr': np.float64(11.34), 'vol': np.float64(4.5), 'sharpe': np.float64(0.66), 'maxdd': np.float64(-7.1), 'inv': 41, 'start': datetime.date(1972, 4, 4)}
+COMBO2_LO  {'cagr': np.float64(6.78), 'vol': np.float64(3.2), 'sharpe': np.float64(-0.39), 'maxdd': np.float64(-7.4), 'inv': 41, 'start': datetime.date(1972, 4, 4)}
+COMBO3_LO  {'cagr': np.float64(7.25), 'vol': np.float64(2.6), 'sharpe': np.float64(-0.32), 'maxdd': np.float64(-4.5), 'inv': 35, 'start': datetime.date(1972, 4, 4)}
+BH10       {'cagr': np.float64(3.16), 'vol': np.float64(8.0), 'sharpe': np.float64(-0.56), 'maxdd': np.float64(-20.8), 'inv': 100, 'start': datetime.date(1972, 4, 4)}
+
+== 1982-2007
+CARRY_LS   {'cagr': np.float64(8.18), 'vol': np.float64(7.5), 'sharpe': np.float64(0.39), 'maxdd': np.float64(-19.1), 'inv': 100, 'start': datetime.date(1982, 1, 4)}
+MOM_LS     {'cagr': np.float64(6.11), 'vol': np.float64(6.6), 'sharpe': np.float64(0.14), 'maxdd': np.float64(-15.0), 'inv': 72, 'start': datetime.date(1982, 1, 4)}
+EQH_LS     {'cagr': np.float64(5.9), 'vol': np.float64(5.3), 'sharpe': np.float64(0.12), 'maxdd': np.float64(-18.5), 'inv': 47, 'start': datetime.date(1982, 1, 4)}
+CARRY_LO   {'cagr': np.float64(8.98), 'vol': np.float64(6.3), 'sharpe': np.float64(0.56), 'maxdd': np.float64(-14.5), 'inv': 64, 'start': datetime.date(1982, 1, 4)}
+MOM_LO     {'cagr': np.float64(6.88), 'vol': np.float64(5.3), 'sharpe': np.float64(0.29), 'maxdd': np.float64(-10.5), 'inv': 50, 'start': datetime.date(1982, 1, 4)}
+EQH_LO     {'cagr': np.float64(7.22), 'vol': np.float64(3.7), 'sharpe': np.float64(0.48), 'maxdd': np.float64(-8.5), 'inv': 23, 'start': datetime.date(1982, 1, 4)}
+COMBO2_LS  {'cagr': np.float64(7.33), 'vol': np.float64(5.1), 'sharpe': np.float64(0.39), 'maxdd': np.float64(-11.6), 'inv': 53, 'start': datetime.date(1982, 1, 4)}
+COMBO3_LS  {'cagr': np.float64(7.18), 'vol': np.float64(3.8), 'sharpe': np.float64(0.46), 'maxdd': np.float64(-8.4), 'inv': 41, 'start': datetime.date(1982, 1, 4)}
+COMBO2_LO  {'cagr': np.float64(8.01), 'vol': np.float64(5.1), 'sharpe': np.float64(0.5), 'maxdd': np.float64(-9.7), 'inv': 57, 'start': datetime.date(1982, 1, 4)}
+COMBO3_LO  {'cagr': np.float64(7.82), 'vol': np.float64(4.2), 'sharpe': np.float64(0.57), 'maxdd': np.float64(-7.3), 'inv': 45, 'start': datetime.date(1982, 1, 4)}
+BH10       {'cagr': np.float64(9.61), 'vol': np.float64(7.5), 'sharpe': np.float64(0.56), 'maxdd': np.float64(-14.5), 'inv': 100, 'start': datetime.date(1982, 1, 4)}
+
+== 2008-2021
+CARRY_LS   {'cagr': np.float64(2.87), 'vol': np.float64(7.8), 'sharpe': np.float64(0.33), 'maxdd': np.float64(-20.3), 'inv': 100, 'start': datetime.date(2008, 1, 2)}
+MOM_LS     {'cagr': np.float64(-0.02), 'vol': np.float64(6.2), 'sharpe': np.float64(-0.06), 'maxdd': np.float64(-24.3), 'inv': 66, 'start': datetime.date(2008, 1, 2)}
+EQH_LS     {'cagr': np.float64(-0.28), 'vol': np.float64(6.0), 'sharpe': np.float64(-0.11), 'maxdd': np.float64(-22.5), 'inv': 44, 'start': datetime.date(2008, 1, 2)}
+CARRY_LO   {'cagr': np.float64(3.29), 'vol': np.float64(6.5), 'sharpe': np.float64(0.45), 'maxdd': np.float64(-14.2), 'inv': 57, 'start': datetime.date(2008, 1, 2)}
+MOM_LO     {'cagr': np.float64(0.92), 'vol': np.float64(5.6), 'sharpe': np.float64(0.1), 'maxdd': np.float64(-15.1), 'inv': 49, 'start': datetime.date(2008, 1, 2)}
+EQH_LO     {'cagr': np.float64(1.42), 'vol': np.float64(4.8), 'sharpe': np.float64(0.21), 'maxdd': np.float64(-10.8), 'inv': 23, 'start': datetime.date(2008, 1, 2)}
+COMBO2_LS  {'cagr': np.float64(1.68), 'vol': np.float64(5.1), 'sharpe': np.float64(0.25), 'maxdd': np.float64(-15.1), 'inv': 48, 'start': datetime.date(2008, 1, 2)}
+COMBO3_LS  {'cagr': np.float64(1.27), 'vol': np.float64(4.3), 'sharpe': np.float64(0.19), 'maxdd': np.float64(-12.8), 'inv': 39, 'start': datetime.date(2008, 1, 2)}
+COMBO2_LO  {'cagr': np.float64(2.26), 'vol': np.float64(5.2), 'sharpe': np.float64(0.35), 'maxdd': np.float64(-13.5), 'inv': 53, 'start': datetime.date(2008, 1, 2)}
+COMBO3_LO  {'cagr': np.float64(2.1), 'vol': np.float64(4.6), 'sharpe': np.float64(0.36), 'maxdd': np.float64(-10.5), 'inv': 43, 'start': datetime.date(2008, 1, 2)}
+BH10       {'cagr': np.float64(3.53), 'vol': np.float64(7.8), 'sharpe': np.float64(0.42), 'maxdd': np.float64(-14.2), 'inv': 100, 'start': datetime.date(2008, 1, 2)}
+
+== 1972-2021 (vor 2022)
+CARRY_LS   {'cagr': np.float64(7.0), 'vol': np.float64(7.7), 'sharpe': np.float64(0.34), 'maxdd': np.float64(-21.9), 'inv': 100, 'start': datetime.date(1972, 4, 4)}
+MOM_LS     {'cagr': np.float64(5.2), 'vol': np.float64(6.5), 'sharpe': np.float64(0.13), 'maxdd': np.float64(-24.3), 'inv': 70, 'start': datetime.date(1972, 1, 3)}
+EQH_LS     {'cagr': np.float64(5.17), 'vol': np.float64(5.6), 'sharpe': np.float64(0.14), 'maxdd': np.float64(-22.5), 'inv': 46, 'start': datetime.date(1972, 4, 4)}
+CARRY_LO   {'cagr': np.float64(6.91), 'vol': np.float64(6.1), 'sharpe': np.float64(0.4), 'maxdd': np.float64(-14.5), 'inv': 61, 'start': datetime.date(1972, 4, 4)}
+MOM_LO     {'cagr': np.float64(5.08), 'vol': np.float64(5.0), 'sharpe': np.float64(0.13), 'maxdd': np.float64(-15.1), 'inv': 44, 'start': datetime.date(1972, 1, 3)}
+EQH_LO     {'cagr': np.float64(5.7), 'vol': np.float64(4.0), 'sharpe': np.float64(0.3), 'maxdd': np.float64(-10.8), 'inv': 23, 'start': datetime.date(1972, 4, 4)}
+COMBO2_LS  {'cagr': np.float64(6.32), 'vol': np.float64(5.3), 'sharpe': np.float64(0.35), 'maxdd': np.float64(-15.1), 'inv': 53, 'start': datetime.date(1972, 4, 4)}
+COMBO3_LS  {'cagr': np.float64(6.25), 'vol': np.float64(4.1), 'sharpe': np.float64(0.42), 'maxdd': np.float64(-12.8), 'inv': 40, 'start': datetime.date(1972, 4, 4)}
+COMBO2_LO  {'cagr': np.float64(6.11), 'vol': np.float64(4.9), 'sharpe': np.float64(0.33), 'maxdd': np.float64(-13.5), 'inv': 52, 'start': datetime.date(1972, 4, 4)}
+COMBO3_LO  {'cagr': np.float64(6.06), 'vol': np.float64(4.1), 'sharpe': np.float64(0.38), 'maxdd': np.float64(-10.5), 'inv': 43, 'start': datetime.date(1972, 4, 4)}
+BH10       {'cagr': np.float64(6.59), 'vol': np.float64(7.7), 'sharpe': np.float64(0.29), 'maxdd': np.float64(-20.8), 'inv': 100, 'start': datetime.date(1972, 4, 4)}
+
+== 2022-2026-10
+CARRY_LS   {'cagr': np.float64(4.19), 'vol': np.float64(8.3), 'sharpe': np.float64(0.06), 'maxdd': np.float64(-14.4), 'inv': 100, 'start': datetime.date(2022, 1, 3)}
+MOM_LS     {'cagr': np.float64(1.51), 'vol': np.float64(6.6), 'sharpe': np.float64(-0.34), 'maxdd': np.float64(-12.3), 'inv': 58, 'start': datetime.date(2022, 1, 3)}
+EQH_LS     {'cagr': np.float64(6.68), 'vol': np.float64(6.9), 'sharpe': np.float64(0.4), 'maxdd': np.float64(-9.7), 'inv': 63, 'start': datetime.date(2022, 1, 3)}
+CARRY_LO   {'cagr': np.float64(0.68), 'vol': np.float64(4.5), 'sharpe': np.float64(-0.7), 'maxdd': np.float64(-14.4), 'inv': 37, 'start': datetime.date(2022, 1, 3)}
+MOM_LO     {'cagr': np.float64(3.06), 'vol': np.float64(2.4), 'sharpe': np.float64(-0.39), 'maxdd': np.float64(-3.5), 'inv': 13, 'start': datetime.date(2022, 1, 3)}
+EQH_LO     {'cagr': np.float64(2.78), 'vol': np.float64(5.6), 'sharpe': np.float64(-0.19), 'maxdd': np.float64(-9.7), 'inv': 32, 'start': datetime.date(2022, 1, 3)}
+COMBO2_LS  {'cagr': np.float64(3.04), 'vol': np.float64(5.8), 'sharpe': np.float64(-0.14), 'maxdd': np.float64(-8.8), 'inv': 51, 'start': datetime.date(2022, 1, 3)}
+COMBO3_LS  {'cagr': np.float64(4.79), 'vol': np.float64(4.2), 'sharpe': np.float64(0.19), 'maxdd': np.float64(-5.1), 'inv': 41, 'start': datetime.date(2022, 1, 3)}
+COMBO2_LO  {'cagr': np.float64(1.94), 'vol': np.float64(2.7), 'sharpe': np.float64(-0.75), 'maxdd': np.float64(-7.3), 'inv': 25, 'start': datetime.date(2022, 1, 3)}
+COMBO3_LO  {'cagr': np.float64(2.27), 'vol': np.float64(3.1), 'sharpe': np.float64(-0.53), 'maxdd': np.float64(-8.0), 'inv': 27, 'start': datetime.date(2022, 1, 3)}
+BH10       {'cagr': np.float64(-3.17), 'vol': np.float64(8.3), 'sharpe': np.float64(-0.83), 'maxdd': np.float64(-21.3), 'inv': 100, 'start': datetime.date(2022, 1, 3)}
+
+== 2022 allein
+CARRY_LS   {'cagr': np.float64(2.9), 'vol': np.float64(10.7), 'sharpe': np.float64(0.14), 'maxdd': np.float64(-14.4), 'inv': 100, 'start': datetime.date(2022, 1, 3)}
+MOM_LS     {'cagr': np.float64(7.56), 'vol': np.float64(8.8), 'sharpe': np.float64(0.65), 'maxdd': np.float64(-5.5), 'inv': 65, 'start': datetime.date(2022, 1, 3)}
+EQH_LS     {'cagr': np.float64(-5.83), 'vol': np.float64(9.1), 'sharpe': np.float64(-0.83), 'maxdd': np.float64(-9.7), 'inv': 67, 'start': datetime.date(2022, 1, 3)}
+CARRY_LO   {'cagr': np.float64(-7.36), 'vol': np.float64(7.9), 'sharpe': np.float64(-1.19), 'maxdd': np.float64(-14.4), 'inv': 58, 'start': datetime.date(2022, 1, 3)}
+MOM_LO     {'cagr': np.float64(2.0), 'vol': np.float64(0.1), 'sharpe': np.float64(nan), 'maxdd': np.float64(0.0), 'inv': 0, 'start': datetime.date(2022, 1, 3)}
+EQH_LO     {'cagr': np.float64(-8.38), 'vol': np.float64(8.7), 'sharpe': np.float64(-1.2), 'maxdd': np.float64(-9.7), 'inv': 59, 'start': datetime.date(2022, 1, 3)}
+COMBO2_LS  {'cagr': np.float64(5.47), 'vol': np.float64(6.8), 'sharpe': np.float64(0.53), 'maxdd': np.float64(-5.7), 'inv': 42, 'start': datetime.date(2022, 1, 3)}
+COMBO3_LS  {'cagr': np.float64(2.0), 'vol': np.float64(5.1), 'sharpe': np.float64(0.03), 'maxdd': np.float64(-5.1), 'inv': 39, 'start': datetime.date(2022, 1, 3)}
+COMBO2_LO  {'cagr': np.float64(-2.72), 'vol': np.float64(3.9), 'sharpe': np.float64(-1.19), 'maxdd': np.float64(-7.3), 'inv': 29, 'start': datetime.date(2022, 1, 3)}
+COMBO3_LO  {'cagr': np.float64(-4.6), 'vol': np.float64(5.2), 'sharpe': np.float64(-1.27), 'maxdd': np.float64(-8.0), 'inv': 39, 'start': datetime.date(2022, 1, 3)}
+BH10       {'cagr': np.float64(-17.04), 'vol': np.float64(10.6), 'sharpe': np.float64(-1.89), 'maxdd': np.float64(-18.9), 'inv': 100, 'start': datetime.date(2022, 1, 3)}
+
+Kalenderjahr-Rendite % (total, inkl. Cash-Anteil)
+           2013  2014  2015  2016  2017  2018  2019  2020  2021  2022  2023  2024  2025  2026
+CARRY_LS   -0.3  10.3   0.8   5.5  -1.0   3.4  -4.8  -9.2   6.4   2.9   5.9  12.0   5.0  -5.1
+MOM_LS     -0.7  -2.2  -6.8  -2.3  -4.7  -2.6   5.7   8.2   1.3   7.5  -3.1  -0.4   1.2   2.3
+EQH_LS     -2.8  -3.7  -2.1  -4.0   1.0   4.2  -6.5  -2.0  -3.0  -5.8  19.5  20.6   0.2   0.1
+CARRY_LO   -4.6  10.3   0.8   2.9   0.8   1.9   2.1   0.3   0.9  -7.3   5.1   5.1   6.4  -5.1
+MOM_LO     -3.4   2.1  -6.8  -1.9  -2.4   1.9   5.7   8.2  -3.1   2.0   5.1   5.8   1.9  -0.1
+EQH_LO      0.0   0.6  -2.1  -4.1   0.9   4.2  -0.3   2.8  -2.0  -8.3  16.0   6.2   1.1  -0.2
+COMBO2_LS   0.3   3.9  -3.0   2.1  -2.9   0.4   0.5  -0.6   4.3   5.4   1.4   5.7   3.6  -1.4
+COMBO3_LS  -0.6   1.6  -2.3   0.5  -1.6   1.8  -1.9  -0.8   2.3   2.0   8.2  10.9   3.0  -0.9
+COMBO2_LO  -3.6   6.1  -3.0   0.7  -0.8   1.9   3.9   4.3  -0.7  -2.7   5.1   5.5   4.3  -2.6
+COMBO3_LO  -2.4   4.6  -2.3  -0.7  -0.2   2.7   2.5   4.0  -1.1  -4.6   8.7   5.7   3.4  -1.8
+BH10       -8.8  10.3   0.8  -0.1   2.5   0.3   9.0  10.1  -4.4 -17.0   3.4  -1.9   7.5  -5.1
+CARRY_LS Pos Ende2021 1.0 Ende Q1-22 1.0 Ende Q2-22 1.0 Ende2022 -1.0
+MOM_LS Pos Ende2021 0.0 Ende Q1-22 0.0 Ende Q2-22 -1.0 Ende2022 0.0
+EQH_LS Pos Ende2021 1.0 Ende Q1-22 1.0 Ende Q2-22 1.0 Ende2022 -1.0
+COMBO2_LO Pos Ende2021 0.5 Ende Q1-22 0.5 Ende Q2-22 0.5 Ende2022 0.0
+COMBO3_LO Pos Ende2021 0.6666666666666666 Ende Q1-22 0.6666666666666666 Ende Q2-22 0.6666666666666666 Ende2022 0.0
+
+Umschlag |dW| pro Jahr (Vollperiode)
+CARRY_LS   1.92
+MOM_LS     7.00
+EQH_LS     6.17
+CARRY_LO   0.96
+MOM_LO     3.97
+EQH_LO     3.14
+COMBO2_LS  4.05
+COMBO3_LS  3.50
+COMBO2_LO  2.20
+COMBO3_LO  2.23
+BH10       0.00

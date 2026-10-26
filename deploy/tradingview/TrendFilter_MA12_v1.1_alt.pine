@@ -1,0 +1,104 @@
+//@version=6
+// Quant-Lab: monatlicher Trendfilter "Aktienindex oder Cash" (Version 1.1)
+//
+// Regel (Backtest 1993-2022 auf SPY, 1930-2022 auf US-Gesamtmarkt):
+//   Am letzten Handelstag des Monats:
+//     Monatsschluss >= Mittel der letzten 12 Monatsschlüsse (inkl. des aktuellen)  -> long, voll investiert
+//     sonst                                                                         -> flat (Cash)
+//   Die Order wird zum Schluss des Monatsletzten ausgelöst und füllt zur Eröffnung des nächsten Handelstags.
+//
+// Änderungen in 1.1 (Entscheidungs- und Mengenlogik unverändert; nur Anzeigen kamen hinzu):
+//   - showRef: zweite Tabelle (unten rechts) mit den letzten 6 Monatsenden: Datum, Schluss, MA, Signal
+//     zum Abgleich mit der Python-Referenz
+//   - adjEquity (nur Datenfenster): Equity mit Cash-Zins (cashRatePct) in Phasen ohne Position.
+//     Der Strategy Tester verzinst Cash selbst NICHT; adjEquity ist nur eine Auswertungslinie.
+//
+// Nutzung: Tageschart des Index (z. B. SP:SPX, oder SPY / ein ETF). Signal = Preisindex, gehandelt = Chart-Symbol.
+// Hinweis: Der Strategy Tester verzinst Cash NICHT (Backtest im Lab: Geldmarktzins eingerechnet) und kennt keine Steuern.
+// Quellen: Faber 2007 (SSRN 962461); Neely/Rapach/Tu/Zhou 2014. Keine Anlageberatung.
+strategy("Quant-Lab Trendfilter MA12", overlay = true, initial_capital = 10000,
+         default_qty_type = strategy.percent_of_equity, default_qty_value = 100,
+         commission_type = strategy.commission.percent, commission_value = 0.05,
+         pyramiding = 0, calc_on_every_tick = false, process_orders_on_close = false)
+
+maLen      = input.int(12, "Monate für den Durchschnitt", minval = 2, maxval = 60)
+useChart   = input.bool(true, "Signal aus dem Chart-Symbol (sonst Symbol unten)")
+altSym     = input.symbol("SP:SPX", "Alternatives Signal-Symbol (Preisindex)")
+showTable  = input.bool(true, "Infotabelle anzeigen")
+showRef    = input.bool(true, "Referenztabelle (letzte 6 Monatsenden)")
+cashRatePct = input.float(0.0, "Cash-Zins p.a. in % für die angepasste Kurve")
+sigSym     = useChart ? syminfo.tickerid : altSym
+
+// Monatswerte des Signal-Symbols. Auf dem letzten Tagesbalken eines Monats liefert der Monats-Request
+// den abgeschlossenen Monat (kein Repainting, kein lookahead).
+[mClose, mMa] = request.security(sigSym, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off)
+
+// letzter Handelstag des Monats = Tagesbalken schließt zusammen mit dem Monatsbalken
+isMonthEnd = time_close == time_close("M")
+
+signalOn = not na(mClose) and not na(mMa) and mClose >= mMa
+
+if isMonthEnd
+    if signalOn and strategy.position_size == 0
+        strategy.entry("Long", strategy.long, comment = "MA12 long")
+    else if not signalOn and strategy.position_size > 0
+        strategy.close("Long", comment = "MA12 flat")
+    msg = signalOn ? "LONG (Cash -> Index)" : "FLAT (Index -> Cash)"
+    alert("Trendfilter MA" + str.tostring(maLen) + " " + syminfo.ticker + ": Monatssignal " + msg
+          + " | Schluss " + str.tostring(mClose, "#.##") + " vs MA " + str.tostring(mMa, "#.##"),
+          alert.freq_once_per_bar_close)
+
+// Referenzdaten für die Prüftabelle: je Monatsende ein Eintrag. Reine Anzeige, keine Orderwirkung.
+var array<float> refClose = array.new<float>()
+var array<float> refMa    = array.new<float>()
+var array<float> refOn    = array.new<float>()
+var array<string> refMon  = array.new<string>()
+
+if isMonthEnd
+    array.push(refClose, mClose)
+    array.push(refMa, mMa)
+    array.push(refOn, signalOn ? 1.0 : 0.0)
+    array.push(refMon, str.format_time(time, "yyyy-MM"))
+
+// Cash-Zins-Kurve (nur Anzeige). Cash wächst in Phasen ohne Position täglich mit cashRatePct p.a.
+// Gezählt werden Kalendertage (Wochenende = 3 Tage). Der Strategy Tester selbst verzinst Cash NICHT.
+var float cashFactor = 1.0
+if not na(time[1]) and strategy.position_size == 0
+    cashFactor := cashFactor * math.pow(1.0 + cashRatePct / 100.0, math.round((time - time[1]) / 86400000.0) / 365.0)
+adjEquity = strategy.equity * cashFactor
+plot(adjEquity, "Equity mit Cash-Zins (nur Datenfenster)", display = display.data_window)
+
+plot(mMa, "MA (Monatsmittel)", color = color.new(color.orange, 0), linewidth = 2)
+bgcolor(signalOn ? color.new(color.green, 92) : color.new(color.red, 92), title = "Signal")
+
+if showTable and barstate.islast
+    var table t = table.new(position.top_right, 2, 4, border_width = 1)
+    table.cell(t, 0, 0, "Signal", text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 0, signalOn ? "LONG" : "FLAT", text_color = color.white, bgcolor = signalOn ? color.green : color.red)
+    table.cell(t, 0, 1, "Schluss (Monat)", text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 1, str.tostring(mClose, "#.##"))
+    table.cell(t, 0, 2, "MA" + str.tostring(maLen), text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 2, str.tostring(mMa, "#.##"))
+    table.cell(t, 0, 3, "Abstand", text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 3, str.tostring((mClose / mMa - 1) * 100, "#.##") + " %")
+
+// Prüftabelle: letzte 6 abgeschlossene Monatsenden, neueste zuerst
+if showRef and barstate.islast
+    var table tRef = table.new(position.bottom_right, 4, 7, border_width = 1)
+    nRef = array.size(refMon)
+    table.cell(tRef, 0, 0, "Monat", text_color = color.white, bgcolor = color.gray)
+    table.cell(tRef, 1, 0, "Schluss", text_color = color.white, bgcolor = color.gray)
+    table.cell(tRef, 2, 0, "MA", text_color = color.white, bgcolor = color.gray)
+    table.cell(tRef, 3, 0, "Signal", text_color = color.white, bgcolor = color.gray)
+    for r = 1 to 6
+        idx = nRef - r
+        if idx >= 0
+            fClose = array.get(refClose, idx)
+            fMa    = array.get(refMa, idx)
+            sOn    = array.get(refOn, idx) == 1.0
+            table.cell(tRef, 0, r, array.get(refMon, idx), text_color = color.white, bgcolor = color.gray)
+            table.cell(tRef, 1, r, na(fClose) ? "-" : str.tostring(fClose, "#.##"))
+            table.cell(tRef, 2, r, na(fMa) ? "-" : str.tostring(fMa, "#.##"))
+            table.cell(tRef, 3, r, sOn ? "LONG" : "FLAT", text_color = color.white, bgcolor = sOn ? color.green : color.red)
+        else
+            table.cell(tRef, 0, r, "-", text_color = color.white, bgcolor = color.gray)

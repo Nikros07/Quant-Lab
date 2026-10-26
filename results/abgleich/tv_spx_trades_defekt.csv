@@ -1,0 +1,14 @@
+Trade #,Type,Signal,Date/Time,Price USD
+1,Entry long,MA12 long,2019-03-01,2785.36
+1,Exit long,MA12 flat,2019-06-03,2741.01
+2,Entry long,MA12 long,2019-07-01,2969.29
+2,Exit long,MA12 flat,2020-03-02,2899.66
+3,Entry long,MA12 long,2020-06-01,3030.51
+3,Exit long,MA12 flat,2022-03-01,4371.65
+4,Entry long,MA12 long,2022-04-01,4546.60
+4,Exit long,MA12 flat,2022-05-02,4140.61
+6,Entry long,MA12 long,2023-04-03,4105.79
+6,Exit long,MA12 flat,2023-11-01,4192.82
+7,Entry long,MA12 long,2023-12-01,4569.42
+7,Exit long,MA12 flat,2025-04-01,5603.55
+8,Entry long,MA12 long,2025-06-02,5895.30

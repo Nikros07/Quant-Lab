@@ -1,0 +1,54 @@
+//@version=6
+// Quant-Lab: Alarm-Indikator zum monatlichen Trendfilter MA12 (Version 1.1)
+//
+// Gleiche Berechnung wie TrendFilter_MA12.pine (Version 1.1):
+//   Am letzten Handelstag des Monats: Monatsschluss >= Mittel der letzten 12 Monatsschlüsse -> LONG, sonst FLAT.
+//   Dieser Indikator handelt nichts. Er zeigt das Signal und sendet Alarme.
+//
+// Alarme (TradingView: Alarm erstellen -> Bedingung wählen):
+//   - Wechsel auf LONG / Wechsel auf FLAT: nur wenn sich das Monatssignal gegenüber dem Vormonat ändert
+//   - Monatssignal (jeden Monat): an jedem letzten Handelstag, Zustand im Text als Plot-Wert (1 = LONG, 0 = FLAT)
+// Hinweis: Im ersten Monat des Charts gibt es noch keinen Vormonat, dort wird kein Wechsel gemeldet.
+// Quellen: Faber 2007 (SSRN 962461); Neely/Rapach/Tu/Zhou 2014. Keine Anlageberatung.
+indicator("Quant-Lab Trendfilter MA12 Alarm", overlay = true, max_labels_count = 500)
+
+maLen    = input.int(12, "Monate für den Durchschnitt", minval = 2, maxval = 60)
+useChart = input.bool(true, "Signal aus dem Chart-Symbol (sonst Symbol unten)")
+altSym   = input.symbol("SP:SPX", "Alternatives Signal-Symbol (Preisindex)")
+sigSym   = useChart ? syminfo.tickerid : altSym
+
+// Monatswerte wie in der Strategie (kein Repainting, kein lookahead)
+[mClose, mMa] = request.security(sigSym, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off)
+
+// letzter Handelstag des Monats
+isMonthEnd = time_close == time_close("M")
+
+signalOn = not na(mClose) and not na(mMa) and mClose >= mMa
+
+// Signal am vorherigen Monatsende. hasPrev verhindert einen Wechsel-Alarm für den ersten Monat im Chart.
+var bool prevOn  = false
+var bool hasPrev = false
+
+wentLong = isMonthEnd and hasPrev and signalOn and not prevOn
+wentFlat = isMonthEnd and hasPrev and not signalOn and prevOn
+
+if isMonthEnd
+    prevOn  := signalOn
+    hasPrev := true
+
+// Plot 0 ist das Signal (1 = LONG, 0 = FLAT). Nur für den Alarmtext {{plot_0}}, im Chart nicht sichtbar.
+plot(signalOn ? 1.0 : 0.0, "Monatssignal (1 = LONG, 0 = FLAT)", display = display.data_window)
+plot(mMa, "MA (Monatsmittel)", color = color.orange, linewidth = 2)
+bgcolor(signalOn ? color.new(color.green, 92) : color.new(color.red, 92), title = "Signal")
+
+if wentLong
+    label.new(bar_index, low, "LONG", color = color.green, style = label.style_label_up, textcolor = color.white, size = size.small)
+if wentFlat
+    label.new(bar_index, high, "FLAT", color = color.red, style = label.style_label_down, textcolor = color.white, size = size.small)
+
+alertcondition(wentLong, title = "Wechsel auf LONG",
+     message = "Trendfilter MA12 {{ticker}}: Monatssignal wechselt auf LONG (Index statt Cash). Monatsschluss liegt über dem MA12.")
+alertcondition(wentFlat, title = "Wechsel auf FLAT",
+     message = "Trendfilter MA12 {{ticker}}: Monatssignal wechselt auf FLAT (Cash statt Index). Monatsschluss liegt unter dem MA12.")
+alertcondition(isMonthEnd, title = "Monatssignal (jeden Monat)",
+     message = "Trendfilter MA12 {{ticker}}: Monatsende, Signal (1 = LONG, 0 = FLAT): {{plot_0}}")

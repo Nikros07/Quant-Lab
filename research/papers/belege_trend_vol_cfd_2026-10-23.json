@@ -1,0 +1,227 @@
+[
+ {
+  "topic": "Thema C: Praxiskosten, Hebel und Drawdown-Kontrolle (Stand 23.10.2026, 12 Web-Aufrufe)",
+  "sources": [
+   {
+    "citation": "ESMA, Pressemitteilung 'ESMA adopts final product intervention measures on CFDs and binary options' (Official Journal 01.06.2018)",
+    "url": "https://www.esma.europa.eu/press-news/esma-news/esma-adopts-final-product-intervention-measures-cfds-and-binary-options",
+    "finding": "Hebelgrenzen fuer Privatkunden bei CFDs: 30:1 (Major-FX), 20:1 (Nicht-Major-FX, Gold, Major-Indizes), 10:1 (Rohstoffe ausser Gold, Nicht-Major-Indizes), 5:1 (Einzelaktien), 2:1 (Krypto). Margin-Close-out bei 50 % der Mindestmarge pro Konto. Negative-Saldo-Schutz. Geltung ab 01.08.2018. Massnahmen gelten jeweils drei Monate und werden verlaengert, wenn ESMA sie erneut beschliesst.",
+    "sample": "Regulierung ab 01.08.2018, Privatkunden EU",
+    "costs_oos": "nicht zutreffend (regulatorisch, keine Kosten)",
+    "caveat": "Ob die Regeln Stand Oktober 2026 unveraendert gelten, konnte nicht bestaetigt werden; die Seite ist die Originalquelle, aber der Status muss auf ESMA-Seite geprueft werden. Fuer Nick reicht die Grenze 20:1 (Indizes) klar, sein Ziel 1,5x liegt weit darunter."
+   },
+   {
+    "citation": "IG, Indikative Overnight-Funding-Saetze fuer Indizes, Aktien und ETFs (UAE-Seite, Woche 19.-25.10.2026)",
+    "url": "https://www.ig.com/ae/help-and-support/cfds/fees-and-charges/overnight-funding-interest-rates-for-indices-shares-and-etfs",
+    "finding": "USD: 4,00 % p.a. (Vorwoche 3,98 %); EUR: 2,49 %; GBP: 3,77 %. Werte werden woechentlich aktualisiert und sind indikativ; IG-Admin-Gebuehr ist nicht enthalten.",
+    "sample": "Woche 19.-25.10.2026 bzw. 12.-18.10.2026",
+    "costs_oos": "Finanzierungssatz des Brokers, ohne Admin-Gebuehr; Spread nicht auf dieser Seite",
+    "caveat": "Gilt fuer Cash-CFDs ueber Nacht; Futures haben kein separates Overnight-Funding, die Kosten stecken im Spread. Satz wird vom Broker selbst gesetzt und kann sich aendern."
+   },
+   {
+    "citation": "BrokerChooser, IG-Review: S&P-500-CFD-Spread (Daten Nov. 2025, Drittanbieter)",
+    "url": "https://brokerchooser.com/ru/broker-reviews/ig-review/ig-sp-500-cfd-spread",
+    "finding": "S&P-500-CFD-Spread bei IG: 0,4 Punkte; Durchschnitt ueber 51 Broker: 0,7 Punkte.",
+    "sample": "Erhebung Nov. 2025",
+    "costs_oos": "Spread, keine Kommission; Round-Trip-Kosten nicht angegeben",
+    "caveat": "Drittanbieter-Vergleichsseite, nicht IG selbst. Die Umrechnung von Punkten in Basispunkte braucht den Indexstand, der in den Quellen nicht vorkam. Eine zweite Seite (BrokerChooser Financing, Mai 2026) nennt fuer S&P-500-Long einen Durchschnitt von -6,4 %, was mit IG 4,00 % nicht zusammenpasst; diese Zahl wird nicht verwendet."
+   },
+   {
+    "citation": "Interactive Brokers, Margin Rates and Financing (Suchergebnis-Auszuege; Seiten SG, HK, CA; Aufruf der AU-Seite per WebFetch war 403)",
+    "url": "https://www.interactivebrokers.com.sg/en/accounts/fees/pricing-margin-rates.php",
+    "finding": "USD-Margin-Staffeln als Benchmark + Aufschlag: z. B. BM+1,5 % bis 100.000 USD, BM+1 % bis 1 Mio., BM+0,75 % bis 50 Mio., BM+0,5 % darueber (Pro). Lite: BM+2,5 %. Zusatzaufschlag 1 % auf grosse Salden. Die genannten Gesamtsaetze unterscheiden sich je nach Seite (5,13 % vs. 5,38 % fuer die erste Stufe).",
+    "sample": "Seitenstand unbekannt, Datum nicht angegeben",
+    "costs_oos": "Zinssatz fuer Kreditfinanzierung, nicht fuer Indexfutures oder CFDs",
+    "caveat": "Nur aus Suchergebnis-Zusammenfassung gelesen, nicht vollstaendig geprueft; Benchmark-Name nicht bestaetigt. Fuer Nicks Kostenmodell nur als Richtwert nutzbar, nicht als belegte Zahl."
+   },
+   {
+    "citation": "Kaminski, K. M. und Lo, A. W. (2014): 'When Do Stop-Loss Rules Stop Losses?', Journal of Financial Markets 18, S. 234-254 (Abstract via MIT DSpace gelesen)",
+    "url": "https://dspace.mit.edu/handle/1721.1/114876",
+    "finding": "Analytischer Rahmen fuer Stop-Loss-Regeln, getestet an Buy-and-Hold-Index-Futures mit taeglichen Daten. Laut Abstract koennen bei laengeren Abtastintervallen bestimmte Stop-Loss-Regeln die erwartete Rendite erhoehen und die Volatilitaet deutlich senken. Aus dem Arbeitspapier (Suchergebnis-Auszug, nicht gelesen): Unter Random-Walk verringern einfache 0/1-Stop-Loss-Regeln immer die erwartete Rendite; nur bei Momentum koennen sie helfen; 50-100 Basispunkte pro Monat Zusatzrendite in Ausstiegsphasen (1950-2004, US-Aktien).",
+    "sample": "Index-Futures, taegliche Daten; Arbeitspapier US-Aktien 1950-2004",
+    "costs_oos": "Transaktionskosten und Out-of-Sample im gelesenen Abstract nicht erwaehnt",
+    "caveat": "Der positive Befund haengt von Abtastintervall und Momentum ab; der Random-Walk-Befund spricht gegen einfache Ausstiegsregeln. Zu Kosten und Out-of-Sample fehlt die Volltext-Pruefung."
+   },
+   {
+    "citation": "Grossman, S. J. und Zhou, Z. (1993): 'Optimal Investment Strategies for Controlling Drawdowns', Mathematical Finance 3(3), S. 241-276 (Abstract via IDEAS/RePEc gelesen); Klass und Nowicki (2005) zur Diskrete-Zeit-Kritik (Lund-Datensatz)",
+    "url": "https://ideas.repec.org/a/bla/mathfi/v3y1993i3p241-276.html",
+    "finding": "Optimale Strategie bei Drawdown-Grenze relativ zum laufenden Hoechststand: Risikoanteil proportional zum Ueberschuss (Vermoegen minus Grenze). Klass und Nowicki zeigen, dass die Strategie in diskreter Zeit nicht immer optimal ist und ihre Langfrist-Wachstumseigenschaft nicht uebertragen bleibt.",
+    "sample": "Theoretisches Modell, keine Marktdaten",
+    "costs_oos": "Keine Kosten, keine Out-of-Sample-Tests im Abstract",
+    "caveat": "Theoretisches Ergebnis; die CPPI-artige Umsetzung mit Hebel 1,5x und 20 % Drawdown-Grenze ist nicht empirisch belegt. Volltext hinter Paywall nicht gelesen."
+   },
+   {
+    "citation": "Autumn Gold Retail Report (Drittanbieter, Kennzahlen SG CTA Index); SG CTA Index Methodik; Alternatives Watch (Juni 2025)",
+    "url": "https://autumngold.com/SubLeaf/gold_report.php?id=114703",
+    "finding": "SG CTA Index (Netto-Gebuehren, Top-20-CTAs, Start 01.01.2000): Jahresrenditen 2020 3,16 %, 2021 6,17 %, 2022 20,15 %, 2023 -3,49 %, 2024 2,36 %; 2025 bis Nov. rund -9,06 % (teils unsicher gelesen). Peak-to-Valley -16,29 % (Apr. 2024 bis Mai 2025), Standardabweichung 8,7 %, Sharpe 0,46 (Zeitraum der Kennzahlen unklar).",
+    "sample": "2020-2025 (Teilzeitraum); Kennzahlen ohne klaren Startpunkt",
+    "costs_oos": "Netto-Gebuehren (laut Indexbeschreibung)",
+    "caveat": "Keine Daten fuer 2009-2019 gefunden; Drawdown nicht ueber den vollen Zeitraum seit 2009 belegt. Drittanbieter-Report, keine Originaldaten von Societe Generale."
+   }
+  ],
+  "design_implications": [
+   "Kostenmodell (belegt, Richtwert): Index-CFD-Spread S&P 500 bei IG ca. 0,4 Punkte (Drittanbieter, Nov. 2025); Umrechnung in bp braucht den aktuellen Indexstand, der nicht belegt ist. Ein Round-Trip mit 0,4 Punkten entspricht ungefaehr 0,4 Punkte je Seite in der Kostenrechnung.",
+   "Finanzierungsaufschlag: IG-Overnight-USD 4,00 % p.a. (indikativ, Woche 19.-25.10.2026, ohne Admin-Gebuehr). Bei 1,5x Exposition wird etwa 0,5x des Eigenkapitals finanziert; das kostet rechnerisch ca. 2,0 % p.a. auf das Eigenkapital, bevor Dividenden und Marktrendite gegengerechnet werden (Rechnung aus der Quelle, keine zusaetzliche Quelle).",
+   "Die ESMA-Grenze fuer Major-Indizes (20:1, also 5 % Margin) liegt weit ueber Nicks Ziel von 1,5x. Die Grenze begrenzt Nick also nicht; das Risiko liegt in der Ausstiegsregel, nicht im Hebel.",
+   "Stop-Loss/Drawdown-Regeln: Kaminski und Lo zeigen nur bei laengeren Abtastintervallen einen Nutzen und sehen unter Random-Walk einfache Ausstiegsregeln als renditemindernd. Das passt zum eigenen Befund (Trendfilter ohne belegten Sharpe-Vorteil). Eine Regel auf 20 % Drawdown braucht daher einen Test mit Kosten und Out-of-Sample, bevor sie belegt ist.",
+   "Trendfolge-Referenz (SG CTA): 2024-2025 Drawdown -16,29 % bei Sharpe 0,46 ist kein Beleg fuer einen Vorteil gegenueber Buy-and-Hold; die Vergleichszahlen seit 2009 fehlen."
+  ],
+  "skeptic_points": [
+   "Kaminski/Lo: positiver Befund gilt nur bei laengeren Abtastintervallen; der Random-Walk-Befund (0/1-Stop-Loss senkt immer die Rendite) spricht gegen die Regel fuer Nicks Ziel. Transaktionskosten und Out-of-Sample waren im gelesenen Abstract nicht genannt.",
+   "Grossman/Zhou ist ein theoretisches Modell ohne Kosten; Klass/Nowicki zeigen Einschraenkungen in diskreter Zeit. Keine empirische Bestaetigung der 20-%-Grenze mit Hebel 1,5x gefunden.",
+   "Die Finanzierungssaetze von IG (4,00 %) und die BrokerChooser-Zahl (-6,4 % fuer S&P-500-Long) passen nicht zusammen. Die Zahl von BrokerChooser wurde deshalb nicht verwendet.",
+   "IBKR-Staffeln wurden aus Suchergebnissen gelesen und unterscheiden sich je nach Seite; ein Seitenabruf war 403. Zahlen sind nicht final geprueft.",
+   "ESMA-Regeln sind befristet (3-Monats-Verlaengerungen). Ob sie 2026 noch gelten, wurde nicht bestaetigt.",
+   "Trendfolge-Kennzahlen (SG CTA) stammen aus einem Drittanbieter-Report mit unklarem Zeitraum; 2025 teilweise unsicher gelesen."
+  ],
+  "not_found": "Nicht gefunden: (a) SG CTA Index Jahresrenditen 2009-2019 und Max-Drawdown ueber den gesamten Zeitraum seit 2009 (Societe-Generale-Factsheets nicht erreichbar); (b) BTOP50-Kennzahlen seit 2009 (nicht gesucht, Budget); (c) Kelly-Praxis und Volatility Drag mit Quelle (nicht gesucht); (d) CPPI-Studien mit empirischen Zahlen (nicht gesucht); (e) IG-Primaerquelle fuer den S&P-500-Spread (nur Drittanbieter); (f) aktueller Indexstand fuer die Umrechnung Punkte in bp; (g) IBKR-Seiten-Abruf (403) und daher kein bestaetigtes Datum der Margin-Staffeln; (h) Bestaetigung, dass die ESMA-Regeln Stand 10/2026 unveraendert gelten. Web-Aufrufe genutzt: 12 von 14.\""
+ },
+ {
+  "topic": "Thema B: Volatilitaets-Targeting und Positionsgroesse (Quellen 2015-2020, Stand Recherche 2026-10-23, 13 Web-Aufrufe)",
+  "sources": [
+   {
+    "citation": "Moreira, A. & Muir, T. (2017). Volatility-Managed Portfolios. Journal of Finance 72(4), 1611-1644",
+    "url": "https://www.nber.org/papers/w22208",
+    "finding": "Gewichtung je Monat umgekehrt zur Vorperioden-Realvarianz (aus Tagesrenditen). Laut Abstract: Portfolios mit weniger Risiko bei hoher Volatilitaet erzielen grosse Alphas, hoehere Sharpe Ratios und Nutzengewinne. Getestet u. a. auf Markt, Value, Momentum, Profitability, Investment, BAB und Carry. Arbeitspapier-Zahl (Okt. 2016, Markt): Alpha 4,9 %, Appraisal Ratio 0,33, Sharpe rund 25 % hoeher. Konstante c so gewaehlt, dass Varianz von gemanagter und ungemanagter Reihe gleich ist (Beschreibung aus Cederburg et al.). Zielvolatilitaet, Hebelgrenze und Rebalancing-Takt: nicht gefunden.",
+    "sample": "US-Faktoren, meist ab 1926 bzw. ab Datenbeginn je Faktor; Carry aus Waehrungen",
+    "costs_oos": "Transaktionskosten: nicht gefunden. Out-of-Sample im Sinne echter Echtzeit-Umsetzung: nicht Kernpunkt; Schaetzung ist in-sample mit Konstante c voll ueber das Sample gewaehlt",
+    "caveat": "Zahlen stammen aus Arbeitspapier-Versionen, nicht sicher aus der publizierten Fassung (PDF nicht lesbar). Die Erklaerung (Volatilitaetsaenderungen nicht durch Renditeaenderungen kompensiert) ist eine Hypothese, keine bewiesene Ursache."
+   },
+   {
+    "citation": "Harvey, C., Hoyle, E., Korgaonkar, R., Rattray, S., Sargaison, M., Van Hemert, O. (2018). The Impact of Volatility Targeting. Journal of Portfolio Management 45(1), 14-33",
+    "url": "https://quantpedia.com/the-impact-of-volatility-targeting-on-equities-bonds-commodities-and-currencies",
+    "finding": "Schaetzfenster: EWMA mit Halbwertszeit 20 Tage. Renditemessung ueber 30-Tage-Renditen, rollierende 1-Jahres-Volatilitaet. Sharpe-Gewinn fuer Risikoassets (Aktien, Credit) und fuer 60/40 und Risk Parity; fuer Anleihen, Waehrungen, Rohstoffe vernachlaessigbar. Volatilitaet der Volatilitaet sinkt von 4,6 % auf 1,8 % (Aktien-Aggregat laut Quantpedia). Extreme Verluste (1-Monats-Renditen unter -10 %) seltener. Max. Drawdown fuer 60/40 und Risk Parity geringer. Zielvolatilitaet, Hebelgrenze, Rebalancing: nicht gefunden (Originalseite PDF nicht lesbar).",
+    "sample": "ueber 60 Assets, taegliche Daten ab 1926",
+    "costs_oos": "Transaktionskosten: nicht gefunden. Out-of-Sample: nicht gefunden",
+    "caveat": "Quelle ist Quantpedia-Zusammenfassung, Originalartikel nicht gelesen. Die Autoren verbinden den Effekt mit dem Leverage-Effekt (Vola steigt nach Verlusten), also Hebel-Effekt-abhaengig; der Sharpe-Gewinn fehlt bei Anleihen, Waehrungen, Rohstoffen."
+   },
+   {
+    "citation": "Cederburg, S., O'Doherty, M., Wang, X., Yan, X. (2020). On the Performance of Volatility-Managed Portfolios. Journal of Financial Economics 138(1), 95-117",
+    "url": "https://www.lehigh.edu/~xuy219/research/COWY.pdf",
+    "finding": "103 Aktienstrategien getestet. In direktem Vergleich schlagen volatilitaetsgemanagte Versionen ihre ungemanagten Gegenstuecke nicht systematisch. Spanning-Regressions-Alphas sind positiv (bestaetigt Moreira/Muir), aber die daraus abgeleiteten Strategien sind nicht in Echtzeit umsetzbar. Realistische Out-of-Sample-Versionen haben niedrigere Certainty Equivalents und Sharpe Ratios als die ungemanagten Portfolios. Parameter: Skalierung mit Realvarianz des Vormonats aus Tagesrenditen.",
+    "sample": "103 US-Aktienstrategien, Stichprobe der Originalstudien",
+    "costs_oos": "Out-of-Sample ja (echtzeitfaehige Schaetzung). Transaktionskosten: nicht ausdruecklich gefunden",
+    "caveat": "Autoren-Lehigh-PDF nicht gelesen; Befunde aus Abstract-Zusammenfassungen (Alpha Architect, Thesis). Eine Thesis (Barto, EUR) spricht von aehnlichen Schlussfolgerungen bei Replikation, mit numerischen Abweichungen."
+   },
+   {
+    "citation": "Liu, F., Tang, X., Zhou, G. (2019). Volatility-Managed Portfolio: Does It Really Work? Journal of Portfolio Management 46(1), 38-51",
+    "url": "https://profiles.wustl.edu/en/publications/volatility-managed-portfolio-does-it-really-work/",
+    "finding": "Typische Volatilitaets-Timing-Anwendung auf Aktienmarkt hat Look-ahead-Bias. Nach Korrektur: Max. Drawdown 68 % bis 93 % in fast allen Faellen; schlaegt Markt nur in der Finanzkrise. Drei alternative Volatilitaets-Timing-Varianten schlagen den Markt ebenfalls nicht.",
+    "sample": "US-Aktienmarkt (Marktindex)",
+    "costs_oos": "Ja, Look-ahead-Korrektur ist ein Out-of-Sample-Test. Kosten: nicht gefunden",
+    "caveat": "Nur Abstract ueber Uni-Profilseite gelesen. Widerspricht der Moreira/Muir-Marktaussage direkt; Ursache ist vor allem die Korrektur des Look-ahead-Bias bei Konstantenwahl."
+   },
+   {
+    "citation": "Kim, A. Y., Tse, Y., Wald, J. K. (2016). Time Series Momentum and Volatility Scaling. Journal of Financial Markets 30, 103-124",
+    "url": "https://ideas.repec.org/a/eee/finmar/v30y2016icp103-124.html",
+    "finding": "Kritik an Moskowitz/Ooi/Pedersen (2012): Der TSMOM-Alpha stammt groesstenteils aus volatilitaetsskalierten Renditen (risk-parity-artig). Monatlicher TSMOM-Alpha 1,27 % mit Vola-Skalierung gegenueber 0,41 % ohne. Cross-Sectional-Momentum-Alpha 0,95 %.",
+    "sample": "Historische Zeitreihen Futures/Assets (Moskowitz-Sample), Details nicht gelesen",
+    "costs_oos": "Kosten und Out-of-Sample: nicht gefunden",
+    "caveat": "Nur Abstract-Zahlen ueber Quantpedia-Zusammenfassung; Volltext nicht gelesen. Zeigt: Vola-Skalierung allein kann den Effekt eines Trendfilters erklaeren, also keine additive Wirkung belegt."
+   },
+   {
+    "citation": "Barroso, P. & Santa-Clara, P. (2015). Momentum has its moments. Journal of Financial Economics 116(1), 111-120",
+    "url": "https://www.cxoadvisory.com/momentum-investing/avoiding-momentum-strategy-crashes/",
+    "finding": "Momentum-Risiko schwankt stark und ist prognostizierbar. Volatilitaetsskalierung der Momentum-Positionen beseitigt Crashes weitgehend und fast verdoppelt die Sharpe Ratio. Long-Short-Dezilportfolio 1926-2011: 16,5 % p. a. skaliert gegenueber 14,5 % unskaliert, Ziel-Volatilitaet 12 % (laut CXO-Zusammenfassung).",
+    "sample": "US-Momentum 1926/1927-2011, Long-Short-Dezile",
+    "costs_oos": "Kosten: nicht gefunden. Out-of-Sample nicht ausdruecklich gefunden (Arbeitspapier 2012 hiess Managing the Risk of Momentum)",
+    "caveat": "Sekundaer ueber CXO Advisory und ETF.com; Abstract-Aussage zur Verdopplung der Sharpe Ratio gilt fuer Momentum-Long-Short, nicht fuer Marktindizes. Der Effekt betrifft Momentum-Crashes, nicht Marktrendite-Verlust-Optimierung."
+   }
+  ],
+  "design_implications": [
+   "Belegte Standardparameter aus der Literatur: EWMA-Schaetzung der Volatilitaet mit Halbwertszeit ca. 20 Tage (Harvey 2018) oder Monatsvarianz aus Tagesrenditen des Vormonats (Moreira/Muir, Cederburg). Ein 21/60-Tage-Fenster ist nach Quellenlage plausibel, aber in den gelesenen Quellen nicht als Gewinnerparameter belegt.",
+   "Zielvolatilitaet, Hebelgrenze und Rebalancing-Takt: in den lesbaren Quellen NICHT gefunden. Der Hebel-bis-1,5x-Wunsch von Nick ist daher nicht durch diese Quellen gedeckt, Zielwerte muessen aus dem Originalpaper oder eigenen Tests kommen.",
+   "Wirkung laut Harvey: Gewinn vor allem bei Aktien und Credit, nicht bei Anleihen, Waehrungen, Rohstoffen. Passt zu Nicks Ziel (Marktrendite, halber Verlust) nur fuer Aktienindizes. Fuer breiten Korb mit 17 Maerkten sollte man Aktien-Teilkorb und andere Assets getrennt testen.",
+   "Trendfolge plus Volatilitaets-Targeting: belegt ist nicht, dass sich die Effekte addieren. Kim/Tse/Wald zeigen, dass ein grosser Teil des TSMOM-Alphas aus der Volatilitaetsskalierung kommt. Schlussfolgerung (eigene Ableitung): Kombination kann dieselbe Wirkung doppelt zaehlen. Nick sollte Trend und Vola-Targeting einzeln und kombiniert gegen Buy&Hold testen.",
+   "Cederburg et al. zeigen, dass die Out-of-Sample-Wirkung bei Aktienstrategien ausbleibt. Konsistent mit Nicks eigener Messung (Trendfilter halbiert Verlust, kein Sharpe-Vorteil). Der belegte Nutzen von Vola-Targeting ist also primaer Risikoreduktion, nicht Renditeplus.",
+   "Mit Hebel 1,5x steigt Finanzierungs- und CFD-Kosten; Liu/Tang/Zhou zeigen, dass nach Look-ahead-Korrektur der Drawdown bei Markt-Timing bis 68-93 % lag. Ein 20-%-Drawdown-Ziel ist mit Hebel nicht belegt und sollte mit Hebelgrenze und Kosten im Backtest gegengeprueft werden."
+  ],
+  "skeptic_points": [
+   "Cederburg et al. (JFE 2020): volatilitaetsgemanagte Portfolios schlagen ungemanagte Versionen out-of-sample nicht systematisch; positive Alphas existieren nur in nicht handelbaren Spanning-Regressionen.",
+   "Liu/Tang/Zhou (JPM 2019): mit Look-ahead-Bias korrigiert, Marktzeitierung mit Vola-Signal hat Max. Drawdown 68-93 % und schlaegt den Markt nur in der Finanzkrise. Direkter Widerspruch zu Moreira/Muir fuer den Marktindex.",
+   "Kim/Tse/Wald (2016): Der Alpha der Trendfolge stammt laut Abstract-Zahlen zu grossen Teilen aus der Volatilitaetsskalierung selbst, nicht aus dem Trend. Die Kombination ist daher nicht unabhaengig belegt.",
+   "Harvey et al. (2018) zeigen Sharpe-Gewinn nur fuer Risikoassets; bei Anleihen, Waehrungen, Rohstoffen praktisch null. Breite Diversifikation ueber alle Maerkte ist nicht automatisch vorteilhaft.",
+   "Moreira/Muir-Zahlen (Alpha 4,9 %, Sharpe +25 %) stammen aus Arbeitspapier-Versionen und sind nicht gegen die publizierte Fassung geprueft. Die in-sample gewaehlte Konstante c macht Ergebnisse anfaellig fuer Overfitting.",
+   "Barroso/Santa-Clara-Verdopplung der Sharpe Ratio gilt fuer Momentum-Long-Short, nicht fuer Marktrendite; Uebertragung auf Nicks Ziel ist nicht belegt.",
+   "Alle Quellen sind nur ueber Abstracts oder Sekundaerzusammenfassungen gelesen (PDF-Volltexte nicht lesbar). Kosten, Rebalancing-Kosten und CFD-Finanzierung sind in keiner Quelle belegt beziffert."
+  ],
+  "not_found": "Nicht gefunden in den gelesenen Quellen: Zielvolatilitaet und Hebelgrenze (Harvey, Moreira/Muir); Rebalancing-Takt; Transaktionskosten-Werte; exakte Sharpe- und Drawdown-Werte der publizierten Moreira/Muir-Fassung; Harvey-Volltext (PDF nicht lesbar); Kim/Tse/Wald-Volltext; konkrete Trend-plus-Vola-Kombinationstests als eigenstaendige Studie mit Zahlen. Die Konstante c ist nur ueber Cederburg-Beschreibung belegt, nicht ueber das Originalpaper."
+ },
+ {
+  "topic": "Thema A: Trendfolge ueber Jahrhunderte und Maerkte (Zeitreihen-Momentum, Gegenbelege, Nachlassen seit 2009)",
+  "sources": [
+   {
+    "citation": "Lempérière, Deremble, Seager, Potters, Bouchaud (CFM), \"Two Centuries of Trend Following\", arXiv 1404.3274 (Kurzfassung Journal of Investment Strategies 2014)",
+    "url": "https://arxiv.org/abs/1404.3274",
+    "finding": "Trendfolge-Ueberrenditen ueber Rohstoffe, Waehrungen, Aktienindizes und Anleihen; t-Statistik etwa 5 seit 1960 und etwa 10 seit 1800 (jeweils nach Abzug des Markt-Drifts). Langfristige Trends zeigen keine statistische Verschlechterung, kurze Trends haben deutlich nachgelassen. Aggregierte Sharpe-Ratio 0.72 (t 10.5) laut Tabelle 8 aus Search-Snippet; je Sektor Waehrungen 0.47, Rohstoffe 0.28, Anleihen 0.40, Indizes 0.70. Hinweis: Die Autoren im Auftrag (Lemperiere et al.) weichen von der Autorenliste der Suchanfrage ab.",
+    "sample": "Futures ab 1960, Spot-Reihen ab 1800 (Rohstoffe, Indizes); Anleihen/Waehrungen je nach Verfuegbarkeit",
+    "costs_oos": "nicht gefunden (in gelesenem Abstract keine Kostenangabe); Out-of-Sample-Aussage nur indirekt (Vergleich Zeitraeume)",
+    "caveat": "Sharpe-Werte stammen aus Search-Snippet, nicht aus gelesener Tabelle. Ein Blog-Kritiker (dailyspeculations) bemaengelt Mehrfachkollinearitaet und Ueberlappung der Beobachtungen; das ist eine Einzelmeinung, kein Peer-Review."
+   },
+   {
+    "citation": "Hurst, Ooi, Pedersen, \"A Century of Evidence on Trend-Following Investing\", Journal of Portfolio Management 44(1), 2017 (AQR-Working-Paper-Version 2012/2014)",
+    "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2993026",
+    "finding": "Zeitreihen-Momentum (Long bei positiver, Short bei negativer Rendite) war laut Abstract ueber 110 Jahre dauerhaft profitabel. Laut Such-Zusammenfassung 67 Maerkte in vier Anlageklassen, Backtest ab 1880; in 8 von 10 groessten Krisen des 60/40-Portfolios positiv. Sekundaerquelle (Swedroe): Sharpe 0.76 nach allen Kosten inkl. 2/20-Gebuehr. Sekundaerquelle: die 10 groessten Drawdowns dauerten im Schnitt etwa 15 Monate.",
+    "sample": "1880 bis etwa 2016 (Sekundaerquelle); 67 Maerkte, 4 Anlageklassen",
+    "costs_oos": "Kosten: nur Sekundaerquelle (Sharpe 0.76 nach Kosten und 2/20); Out-of-Sample nicht gefunden",
+    "caveat": "Primaertabellen nicht lesbar: SSRN-Seite 403, AQR-Seite nur Einleitung, Yale-PDF binaer/verschluesselt. Sharpe-, Drawdown- und Krisenwerte daher nur aus Sekundaerquellen, nicht verifiziert. Fensterlaengen (1/3/12) nicht gefunden."
+   },
+   {
+    "citation": "Moskowitz, Ooi, Pedersen, \"Time Series Momentum\", Journal of Financial Economics 104(2), 2012",
+    "url": "https://academicnewsletter.sufe.edu.cn/info/356810",
+    "finding": "Signal: Vorzeichen der vergangenen 12-Monats-Ueberrendite, eine Monat Haltedauer. 58 liquide Futures (Aktienindizes, Waehrungen, Rohstoffe, Anleihen). Persistenz 1 bis 12 Monate, die sich ueber laengere Horizonte teilweise umkehrt. Diversifiziertes Portfolio mit Alpha und geringer Faktor-Exposition. Sharpe-Zahl nicht gefunden (Quantpedia nennt nur 'hoch').",
+    "sample": "Monatsfaktoren Januar 1985 bis Dezember 2009 (AQR-Datensatz)",
+    "costs_oos": "nicht gefunden; Sample endet 2009, also vor dem Nachlassen",
+    "caveat": "Sharpe-Werte nicht verifiziert. Ende des Samples 2009 ist genau die Phase, nach der laut Kurth et al. das Signal nachlaesst."
+   },
+   {
+    "citation": "Huang, Li, Wang, Zhou, \"Time series momentum: Is it there?\", Journal of Financial Economics 135 (2020), S. 774-794 (Gegenbeleg)",
+    "url": "https://profiles.wustl.edu/en/publications/time-series-momentum-is-it-there/",
+    "finding": "Zeitreihenregressionen je Asset: kaum Evidenz fuer TSM, in und out of sample. Gepoolte Regression: t-Statistik gross, aber unter den kritischen Bootstrap-Werten nicht belastbar. TSM-Strategie ist praktisch identisch mit einer Strategie auf Basis des historischen Mittelwerts, also ohne Vorhersagekraft. Gesamturteil: schwache Evidenz, besonders bei vielen Assets.",
+    "sample": "Ueberwiegend Futures-Universum, Zeitraum im Abstract nicht genannt",
+    "costs_oos": "Kosten im Abstract nicht erwaehnt; Out-of-Sample-Tests auf Einzelasset-Ebene vorhanden, Kennzahlen nicht gefunden",
+    "caveat": "Abstract gelesen, Haupttabellen nicht. Kritik richtet sich gegen Moskowitz/Ooi/Pedersen-Methodik (Pooling)."
+   },
+   {
+    "citation": "Kurth, Eisler, Rej, Bouchaud, arXiv 2607.01550 (2026), Trendfolge-Puzzle nach 2009",
+    "url": "https://arxiv.org/abs/2607.01550",
+    "finding": "Trendfolge ueber mindestens zwei Jahrhunderte profitabel; seit etwa 2009 liefern kurzfristige Trends keine verlaesslichen Renditen mehr. Entscheidende Groesse: volatilitaetsnormierter Tick-Size. Nach 2008 brach der Trend-PnL bei kleinem Tick ein, bei grossem Tick blieb er weitgehend erhalten. Erklaerung ueber Feedback-Mechanik und Rueckzug der Liquiditaet durch HFT-Market-Maker. Laut Such-Snippet: rollierende 5-Jahres-Sharpe des schnellen EWM-Signals fiel von 1-2.5 auf statistisch nicht von Null unterscheidbar nach 2010.",
+    "sample": "1995 bis 2025, rund 100 liquide Futures plus CTA-Proxy",
+    "costs_oos": "Nicht gefunden; Abstract setzt aggressive Ausfuehrung zu vertretbaren Kosten voraus",
+    "caveat": "Preprint, nicht begutachtet. Signal-Parameter und Sharpe-Werte nur aus Snippet bzw. nicht gefunden. Abstract gelesen, nicht Volltext."
+   },
+   {
+    "citation": "Baltas, Kosowski, \"Momentum Strategies in Futures Markets and Trend-Following Funds\", EFMA 2012 / SMU-Working-Paper 2013",
+    "url": "https://efmaefm.org/0EFMAMEETINGS/EFMA%20ANNUAL%20MEETINGS/2012-Barcelona/papers/BK_MOMF_Full.pdf",
+    "finding": "Laut Such-Zusammenfassung: TSMOM-Strategien mit Sharpe ueber 1.20 (Draft 2012, Stichprobe 1974-2002, 71 Kontrakte; spaetere Version 1974-2012). Monatliche, woechentliche und taegliche Varianten schwach korreliert. Kein statistisch signifikanter Kapazitaetsengpass laut SMU-Version 2013. Baltas-Arbeit zur Volatilitaetsgewichtung: Sharpe steigt von 0.31 (Nach-Krise 2009-2013) auf 0.78 bei korrelationsbewusster Gewichtung, gesamt 1.31 auf 1.48 (1988-2013).",
+    "sample": "1974-2002 bzw. 1974-2012; 71 Kontrakte; 1988-2013 (Gewichtung)",
+    "costs_oos": "Kapazitaet untersucht; Kostenangaben nicht gefunden",
+    "caveat": "Sharpe 1.20 aus Such-Zusammenfassung, Paper nicht gelesen. Unterschiedliche Stichproben zwischen Versionen."
+   },
+   {
+    "citation": "Such-Ergebnisse ohne Primaerquelle: naive TSMOM-Benchmark nach 2010 und Commodity-Studie (2010-2018)",
+    "url": "https://arxiv.org/pdf/2607.01550",
+    "finding": "Laut Such-Snippets: naive TSMOM-Benchmark nach 2010 Sharpe 0.50 (etwa 40 Prozent unter Gesamtstichprobe); TSMOM-Portfolio ueber 24 Rohstoffe 2010-2018 Sharpe 0.07. Babbedge und Kerson (2019): Trendfolge in weniger beachteten Rohstoffmaerkten bleibt besser.",
+    "sample": "nach 2010 bzw. 2010-2018",
+    "costs_oos": "nicht gefunden",
+    "caveat": "Nur Snippets, Primaerquellen nicht gelesen. Behandeln als Hinweis, nicht als belegte Zahl."
+   }
+  ],
+  "design_implications": [
+   "Lange Fenster (12 Monate) sind in den gelesenen Quellen am besten belegt: Lempérière et al. finden keine Verschlechterung langer Trends, waehrend kurze Trends seit 2009 nachlassen. Der Monats-Trendfilter von Nick ist damit eher ein langer Trend und in diesem Punkt nicht der fragile Teil. Parameter nicht optimieren, nur 12 Monate als Referenz verwenden.",
+   "Breite ueber Maerkte ist der Teil, der laut Quellen traegt: Moskowitz et al. berichten Effekte ueber 58 Kontrakte, Huang et al. finden den Effekt je Einzelmarkt schwach. Ein Einzelindex allein ist nach der Literatur nicht belegt; der 17-Maerkte-Korb entspricht dem Argument.",
+   "Kosten sind relevant: Die Hurst-Sekundaerquelle nennt eine Sharpe von 0.76 nach Kosten und 2/20-Gebuehr; Bruttowerte liegen hoeher. Das Ergebnis bei Nicks Umsetzung muss mit CFD-Spreads, Finanzierung und Rollkosten neu gerechnet werden; die Papers liefern dafuer keine Zahlen.",
+   "Hebel bis 1.5x ist in keiner gelesenen Quelle belegt. Die Literatur liefert Sharpe-Werte bei Volatilitaetsnormierung (Baltas), nicht Aussagen zu Hebel in ruhigen Phasen.",
+   "Die Zahlen des Hurst-Papers (Krisen, Drawdown) sind fuer Nicks Ziel (halber Verlust) nur als Richtung brauchbar, weil Primaertabellen nicht gelesen werden konnten. Vor einer Entscheidung Primaerquelle (JPM 2017 PDF) pruefen."
+  ],
+  "skeptic_points": [
+   "Huang, Li, Wang, Zhou (JFE 2020): Einzelmarkt-Evidenz schwach; TSM nicht besser als historischer Mittelwert, also moeglicherweise keine Vorhersagekraft. Das ist der staerkste Gegenbeleg und trifft die Kernannahme.",
+   "Nachlassen seit 2009: Kurth et al. (2026, Preprint) und Lempérière et al. zeigen, dass kurze Trends nach 2009 praktisch keine Sharpe mehr haben. Die Hurst-Stichprobe endet um 2016 bis 2017, Moskowitz et al. um 2009 - beide Stichproben enthalten die schwache Phase nicht oder nur teilweise.",
+   "Mikrostruktur-Erklaerung (Tick-Size): Der Effekt haengt laut Kurth et al. von Marktstruktur ab. Das spricht gegen die Annahme, dass ein Signal auf neuen Maerkten automatisch gleich wirkt.",
+   "Publikationsbias und Datenmining: Viele Papers zu TSM sind auf dieselben Futures-Daten angewiesen; Zahlen aus Studien mit anderen Stichproben (Baltas 1974-2002 vs. 1974-2012) sind nicht direkt vergleichbar.",
+   "Kosten, Out-of-Sample und Krisenverhalten sind in den gelesenen Abstracts meist nicht quantifiziert. Die Behauptung, Trendfolge halbiere den Verlust, ist in den gelesenen Quellen nicht als Zahl belegt.",
+   "Verifiziert sind nur: Lempérière-Abstract (t-Statistiken), Huang-Abstract (Gegenbeleg), Kurth-Abstract (Befund nach 2009), MOP-Datenbasis (58 Kontrakte, 12 Monate). Alle Sharpe-Werte (0.72, 0.76, 1.20, 0.50, 0.07) stammen aus Snippets oder Sekundaerquellen und sind nicht gegen die Primaertabellen geprueft."
+  ],
+  "not_found": "Hurst et al.: Sharpe, Rendite vor/nach Kosten, Drawdown und Krisentabelle aus Primaerquelle (PDF nicht lesbar). Moskowitz et al.: Sharpe-Werte je Anlageklasse und Lookback. Lempérière et al.: Lookback-Fenster, Kostenannahmen, Out-of-Sample-Tests. Huang et al.: Renditen und Kosten. Kurth et al.: Signal-Parameter, Sharpe-Werte, Kostenbehandlung (nur Abstract gelesen). Baltas/Kosowski: Journal-Version und Kapazitaetszahlen. Fensterlaengen-Vergleich (1/3/12 Monate) in Hurst und Lempérière nicht belegt. Daten fuer 2021-2026 ueber Kurth hinaus nicht gefunden. Gesamtzahl Web-Aufrufe: 14 (ausgeschoepft).\""
+ }
+]

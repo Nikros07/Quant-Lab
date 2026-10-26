@@ -1,0 +1,25 @@
+# Backtest-Ergebnis `audit_crypto_trend_ens_btc_eth_cost2` (bis 2022-12-31, Ausführung: open, Kosten ×2.0)
+
+Läufe: **3** (inkl. Varianten, alle zählen als Versuche für den Deflated Sharpe). Streuung der Tages-Sharpe über alle Läufe: 1.14e-05. PBO (gemeinsames Fenster ab 2004-01-01, 3 Läufe): **0.91**.
+
+Kosten sind enthalten (5 bps pro Seite Standard), Steuern NICHT. Benchmarks: SPY Buy&Hold, 60/40 (SPY/IEF).
+
+- **SPY**: CAGR 9.5%, Vol 18.9%, Sharpe 0.46, MaxDD -55.2%
+- **60/40**: CAGR 7.7%, Vol 10.6%, Sharpe 0.64, MaxDD -32.5%
+- **MKT**: CAGR 9.8%, Vol 17.5%, Sharpe 0.45, MaxDD -84.1%
+
+## Rangliste nach Sharpe
+
+| Lauf | Fam. | ab | Jahre | CAGR | Vol | Sharpe | MaxDD | ΔSharpe vs SPY (90%-KI) | p | 5J-Fenster>SPY | DSR | Umsatz/J | Kosten/J |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| crypto_trend_ens_btc_eth:sma50_btc | crypto | 2015-09 | 7.3 | 87.3% | 54.0% | 1.41 | -60.6% | 0.81 (-0.02…1.64) | 0.055 | 100% | 1.000 | 8.3 | 6.67% |
+| crypto_trend_ens_btc_eth | crypto | 2015-09 | 7.3 | 61.7% | 41.4% | 1.34 | -49.3% | 0.74 (-0.09…1.50) | 0.055 | 100% | 1.000 | 7.7 | 6.12% |
+| crypto_trend_ens_btc_eth:sma200_btc | crypto | 2015-09 | 7.3 | 80.7% | 58.8% | 1.28 | -70.4% | 0.68 (-0.18…1.55) | 0.110 | 100% | 1.000 | 2.7 | 2.19% |
+
+## Nach deutscher Steuer (Abgeltungsteuer, Teilfreistellung, Verkauf zum Schluss angenommen)
+
+| Lauf | CAGR vor Steuer | CAGR nach Steuer | Steuerlast p.a. | Sharpe nach Steuer | SPY CAGR nach Steuer | Überrendite nach Steuer |
+|---|---|---|---|---|---|---|
+| crypto_trend_ens_btc_eth:sma50_btc | 87.3% | 70.1% | 17.20% | 1.22 | 8.6% | 61.4% |
+| crypto_trend_ens_btc_eth:sma200_btc | 80.7% | 68.3% | 12.48% | 1.15 | 8.6% | 59.6% |
+| crypto_trend_ens_btc_eth | 61.7% | 48.4% | 13.32% | 1.11 | 8.6% | 39.7% |

@@ -1,0 +1,53 @@
+31 Strategien, Zeitraum bis 2022-12-31, exec=open
+  ok  antonacci_gem_lookback_ensemble (4 Läufe)
+  ok  bond_composite_3sig_longonly (4 Läufe)
+  ok  bond_composite_3sig_longonly_etf (4 Läufe)
+  ok  commodity_gold_trend_dbc_gld (4 Läufe)
+  ok  country_etf_xsmom_12_1 (4 Läufe)
+  ok  country_value_cape_faber_proxy (4 Läufe)
+  ok  crypto_trend_ens_btc_eth (3 Läufe)
+  ok  eq_voltarget_ewma_harvey (4 Läufe)
+  ok  eq_voltarget_ewma_harvey_etf (4 Läufe)
+  ok  faber_gtaa (3 Läufe)
+  ok  halloween_nov_apr_equity (2 Läufe)
+  ok  halloween_nov_apr_equity_etf (3 Läufe)
+  ok  index_etf_ibs_rsi2_longonly (3 Läufe)
+  ok  ivp_risk_parity_unlevered (4 Läufe)
+  ok  keller_paa_g12 (4 Läufe)
+  ok  lowvol_defensive_longonly (2 Läufe)
+  ok  lowvol_defensive_longonly_etf (3 Läufe)
+  ok  mop2012_tsmom_12m_40vol (3 Läufe)
+  ok  nagel_vix_gated_sector_etf_reversal (4 Läufe)
+  ok  putwrite_vrp_index (4 Läufe)
+  ok  sector_etf_top3_12m (4 Läufe)
+  ok  sector_etf_top3_12m_etf (4 Läufe)
+  ok  static_multifactor_equal_risk (2 Läufe)
+  ok  svxy_term_structure_filter (3 Läufe)
+  ok  tom_spy_m2_p3 (3 Läufe)
+  ok  tom_spy_m2_p3_etf (3 Läufe)
+  ok  trend_ma12_us_equity_cash (4 Läufe)
+  ok  trend_ma12_us_equity_cash_etf (4 Läufe)
+  ok  wml_volscaled_ff (4 Läufe)
+  ok  xtsmom_us_switch_longcash (3 Läufe)
+  ok  xtsmom_us_switch_longcash_etf (3 Läufe)
+
+# Backtest-Ergebnis `audited_all` (bis 2022-12-31, Ausführung: open, Kosten ×1.0)
+
+Läufe: **107** (inkl. Varianten, alle zählen als Versuche für den Deflated Sharpe). Streuung der Tages-Sharpe über alle Läufe: 1.57e-04. PBO (gemeinsames Fenster ab 2004-01-01, 62 Läufe): **0.47**.
+
+Kosten sind enthalten (5 bps pro Seite Standard), Steuern NICHT. Benchmarks: SPY Buy&Hold, 60/40 (SPY/IEF).
+
+- **SPY**: CAGR 9.5%, Vol 18.9%, Sharpe 0.46, MaxDD -55.2%
+- **60/40**: CAGR 7.7%, Vol 10.6%, Sharpe 0.64, MaxDD -32.5%
+- **MKT**: CAGR 9.8%, Vol 17.5%, Sharpe 0.45, MaxDD -84.1%
+
+## Rangliste nach Sharpe
+
+| Lauf | Fam. | ab | Jahre | CAGR | Vol | Sharpe | MaxDD | ΔSharpe vs SPY (90%-KI) | p | 5J-Fenster>SPY | DSR | Umsatz/J | Kosten/J |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| crypto_trend_ens_btc_eth:sma50_btc | crypto | 2015-09 | 7.3 | 93.6% | 53.9% | 1.47 | -58.5% | 0.87 (0.03…1.69) | 0.042 | 100% | 0.990 | 8.3 | 3.33% |
+| crypto_trend_ens_btc_eth | crypto | 2015-09 | 7.3 | 66.7% | 41.4% | 1.41 | -46.6% | 0.81 (0.01…1.54) | 0.039 | 100% | 0.984 | 7.7 | 3.06% |
+| crypto_trend_ens_btc_eth:sma200_btc | crypto | 2015-09 | 7.3 | 82.7% | 58.8% | 1.30 | -69.9% | 0.70 (-0.18…1.54) | 0.092 | 100% | 0.969 | 2.7 | 1.09% |
+
+Geschrieben: results/SUMMARY_audited_all.md, summary_audited_all.csv
+EXIT 0

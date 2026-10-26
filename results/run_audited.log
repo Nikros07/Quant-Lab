@@ -1,0 +1,35 @@
+14 Strategien, Zeitraum bis 2022-12-31, exec=open
+  ok  trend_ma12_us_equity_cash (4 Läufe)
+  ok  trend_ma12_us_equity_cash_etf (4 Läufe)
+  ok  mop2012_tsmom_12m_40vol (3 Läufe)
+  ok  sector_etf_top3_12m (4 Läufe)
+  ok  sector_etf_top3_12m_etf (4 Läufe)
+  ok  country_etf_xsmom_12_1 (4 Läufe)
+  ok  wml_volscaled_ff (4 Läufe)
+  ok  keller_paa_g12 (4 Läufe)
+  ok  antonacci_gem_lookback_ensemble (4 Läufe)
+  ok  eq_voltarget_ewma_harvey (4 Läufe)
+  ok  eq_voltarget_ewma_harvey_etf (4 Läufe)
+  ok  country_value_cape_faber_proxy (4 Läufe)
+  ok  nagel_vix_gated_sector_etf_reversal (4 Läufe)
+  ok  faber_gtaa (3 Läufe)
+
+# Backtest-Ergebnis `audited` (bis 2022-12-31, Ausführung: open, Kosten ×1.0)
+
+Läufe: **54** (inkl. Varianten, alle zählen als Versuche für den Deflated Sharpe). Streuung der Tages-Sharpe über alle Läufe: 1.32e-04. PBO (gemeinsames Fenster ab 2004-01-01, 37 Läufe): **0.47**.
+
+Kosten sind enthalten (5 bps pro Seite Standard), Steuern NICHT. Benchmarks: SPY Buy&Hold, 60/40 (SPY/IEF).
+
+- **SPY**: CAGR 9.5%, Vol 18.9%, Sharpe 0.46, MaxDD -55.2%
+- **60/40**: CAGR 7.7%, Vol 10.6%, Sharpe 0.64, MaxDD -32.5%
+- **MKT**: CAGR 9.8%, Vol 17.5%, Sharpe 0.45, MaxDD -84.1%
+
+## Rangliste nach Sharpe
+
+| Lauf | Fam. | ab | Jahre | CAGR | Vol | Sharpe | MaxDD | ΔSharpe vs SPY (90%-KI) | p | 5J-Fenster>SPY | DSR | Umsatz/J | Kosten/J |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| nagel_vix_gated_sector_etf_reversal:vix_25 | reversal | 1998-12 | 24.0 | 6.5% | 6.8% | 0.72 | -14.0% | 0.38 (-0.01…0.75) | 0.043 | 41% | 0.941 | 18.5 | 1.11% |
+| sector_etf_top3_12m:sma10 | xsmom | 1927-07 | 95.4 | 12.2% | 13.7% | 0.68 | -49.1% | 0.25 (0.11…0.40) | 0.007 | 61% | 0.992 | 2.2 | 0.22% |
+| nagel_vix_gated_sector_etf_reversal:vix_20 | reversal | 1998-12 | 24.0 | 6.8% | 7.9% | 0.67 | -14.0% | 0.32 (-0.02…0.66) | 0.063 | 41% | 0.894 | 33.9 | 2.04% |
+
+Geschrieben: results/SUMMARY_audited.md, summary_audited.csv

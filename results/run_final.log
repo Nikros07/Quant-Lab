@@ -1,0 +1,24 @@
+[holdout] Öffnung #1 protokolliert
+2 Strategien, Zeitraum bis heute, exec=open
+  ok  trend_ma12_us_equity_cash_etf (4 Läufe)
+  ok  trend_ma12_us_equity_cash (4 Läufe)
+
+# Backtest-Ergebnis `final_trend` (bis heute, Ausführung: open, Kosten ×1.0)
+
+Läufe: **8** (inkl. Varianten, alle zählen als Versuche für den Deflated Sharpe). Streuung der Tages-Sharpe über alle Läufe: 4.72e-06. PBO (gemeinsames Fenster ab 2004-01-01, 4 Läufe): **0.86**.
+
+Kosten sind enthalten (5 bps pro Seite Standard), Steuern NICHT. Benchmarks: SPY Buy&Hold, 60/40 (SPY/IEF).
+
+- **SPY**: CAGR 10.9%, Vol 18.5%, Sharpe 0.52, MaxDD -55.2%
+- **60/40**: CAGR 8.6%, Vol 10.5%, Sharpe 0.68, MaxDD -32.5%
+- **MKT**: CAGR 10.3%, Vol 17.5%, Sharpe 0.47, MaxDD -84.1%
+
+## Rangliste nach Sharpe
+
+| Lauf | Fam. | ab | Jahre | CAGR | Vol | Sharpe | MaxDD | ΔSharpe vs SPY (90%-KI) | p | 5J-Fenster>SPY | DSR | Umsatz/J | Kosten/J |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| trend_ma12_us_equity_cash_etf:signal_tr | macro | 1993-12 | 32.8 | 10.5% | 12.9% | 0.65 | -22.5% | 0.13 (-0.06…0.34) | 0.125 | 43% | 1.000 | 0.6 | 0.11% |
+| trend_ma12_us_equity_cash_etf | macro | 1993-01 | 33.7 | 10.0% | 12.7% | 0.62 | -22.5% | 0.10 (-0.13…0.30) | 0.225 | 38% | 1.000 | 0.6 | 0.12% |
+| trend_ma12_us_equity_cash_etf:ma2_12 | macro | 1993-01 | 33.7 | 10.4% | 13.8% | 0.61 | -33.7% | 0.09 (-0.12…0.29) | 0.230 | 41% | 0.999 | 0.4 | 0.08% |
+
+Geschrieben: results/SUMMARY_final_trend.md, summary_final_trend.csv

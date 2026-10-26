@@ -1,0 +1,49 @@
+name: trend-bot
+
+# Zwei Läufe pro Handelstag (UTC): einer deckt die Sommerzeit ab (US-Börse öffnet 13:30 UTC),
+# der andere die Winterzeit (14:30 UTC). Der Bot ist zustandsbasiert und prüft selbst, ob der Markt offen
+# ist -> der jeweils unpassende Lauf macht einfach nichts. GitHub startet Zeitpläne manchmal verspätet.
+on:
+  schedule:
+    - cron: "45 13 * * 1-5"
+    - cron: "45 14 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "true = nur Signal und Plan anzeigen, keine Order"
+        default: "true"
+
+concurrency:
+  group: trend-bot
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Bot ausführen
+        run: python -m trendbot run
+        env:
+          ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_MODE: ${{ vars.ALPACA_MODE || 'paper' }}
+          CONFIRM_LIVE: ${{ secrets.CONFIRM_LIVE }}
+          # Standard ist Trockenlauf. Für echte Papier-Orders das Repository-Variable DRY_RUN auf false setzen.
+          DRY_RUN: ${{ github.event.inputs.dry_run || vars.DRY_RUN || 'true' }}
+          TRADE_SYMBOL: ${{ vars.TRADE_SYMBOL }}
+          SIGNAL_SYMBOL: ${{ vars.SIGNAL_SYMBOL }}
+          EXPOSURE: ${{ vars.EXPOSURE }}
+          ALLOCATION_USD: ${{ vars.ALLOCATION_USD }}
+          MAX_ORDER_USD: ${{ vars.MAX_ORDER_USD }}
+          BOT_ENABLED: ${{ vars.BOT_ENABLED }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}

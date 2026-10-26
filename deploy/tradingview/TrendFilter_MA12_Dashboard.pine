@@ -1,0 +1,195 @@
+//@version=6
+// Quant-Lab: Trendfilter-Dashboard für 17 Märkte (Monats-MA12-Regel, Anzeige und Alarm)
+//
+// Regel (identisch zu TrendFilter_MA12.pine), je Markt:
+//   Monatsschluss >= Mittel (ta.sma) der letzten maLen Monatsschlüsse (inkl. des aktuellen) -> LONG, sonst FLAT.
+//
+// Nutzung: Tages-Chart eines beliebigen Symbols. Das Dashboard hängt NICHT vom Chart-Symbol ab.
+// Hinweis: Symbole können je nach TradingView-Zugang anders heißen; in den Einstellungen ändern.
+//   Ungültige Symbole stören nicht (ignore_invalid_symbol): der Markt zeigt dann "–" (keine Daten).
+// Hinweis: In TradingView noch nicht kompiliert.
+// Keine Anlageberatung.
+indicator("Quant-Lab Trendfilter Dashboard", overlay = true)
+
+maLen = input.int(12, "Monate für den Durchschnitt", minval = 2, maxval = 60)
+
+s1  = input.symbol("SP:SPX", "Markt 1", inline = "m1")
+a1  = input.bool(true, "aktiv", inline = "m1")
+s2  = input.symbol("NASDAQ:IXIC", "Markt 2", inline = "m2")
+a2  = input.bool(true, "aktiv", inline = "m2")
+s3  = input.symbol("DJ:DJI", "Markt 3", inline = "m3")
+a3  = input.bool(true, "aktiv", inline = "m3")
+s4  = input.symbol("TVC:NI225", "Markt 4", inline = "m4")
+a4  = input.bool(true, "aktiv", inline = "m4")
+s5  = input.symbol("TVC:UKX", "Markt 5", inline = "m5")
+a5  = input.bool(true, "aktiv", inline = "m5")
+s6  = input.symbol("TVC:DAX", "Markt 6", inline = "m6")
+a6  = input.bool(true, "aktiv", inline = "m6")
+s7  = input.symbol("TVC:CAC40", "Markt 7", inline = "m7")
+a7  = input.bool(true, "aktiv", inline = "m7")
+s8  = input.symbol("TVC:HSI", "Markt 8", inline = "m8")
+a8  = input.bool(true, "aktiv", inline = "m8")
+s9  = input.symbol("ASX:XJO", "Markt 9", inline = "m9")
+a9  = input.bool(true, "aktiv", inline = "m9")
+s10 = input.symbol("TSX:TSX", "Markt 10", inline = "m10")
+a10 = input.bool(true, "aktiv", inline = "m10")
+s11 = input.symbol("KRX:KOSPI", "Markt 11", inline = "m11")
+a11 = input.bool(true, "aktiv", inline = "m11")
+s12 = input.symbol("TVC:SX5E", "Markt 12", inline = "m12")
+a12 = input.bool(true, "aktiv", inline = "m12")
+s13 = input.symbol("AMEX:EEM", "Markt 13", inline = "m13")
+a13 = input.bool(true, "aktiv", inline = "m13")
+s14 = input.symbol("AMEX:EFA", "Markt 14", inline = "m14")
+a14 = input.bool(true, "aktiv", inline = "m14")
+s15 = input.symbol("NASDAQ:TLT", "Markt 15", inline = "m15")
+a15 = input.bool(true, "aktiv", inline = "m15")
+s16 = input.symbol("TVC:GOLD", "Markt 16", inline = "m16")
+a16 = input.bool(true, "aktiv", inline = "m16")
+s17 = input.symbol("BITSTAMP:BTCUSD", "Markt 17", inline = "m17")
+a17 = input.bool(true, "aktiv", inline = "m17")
+
+// Monatswerte je Markt. Auf dem letzten Tagesbalken eines Monats liefert der Monats-Request
+// den abgeschlossenen Monat (kein Repainting, kein lookahead).
+[c1, m1]   = request.security(s1, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c2, m2]   = request.security(s2, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c3, m3]   = request.security(s3, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c4, m4]   = request.security(s4, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c5, m5]   = request.security(s5, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c6, m6]   = request.security(s6, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c7, m7]   = request.security(s7, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c8, m8]   = request.security(s8, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c9, m9]   = request.security(s9, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c10, m10] = request.security(s10, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c11, m11] = request.security(s11, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c12, m12] = request.security(s12, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c13, m13] = request.security(s13, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c14, m14] = request.security(s14, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c15, m15] = request.security(s15, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c16, m16] = request.security(s16, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+[c17, m17] = request.security(s17, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off, ignore_invalid_symbol = true)
+
+ok1  = not na(c1)  and not na(m1)
+ok2  = not na(c2)  and not na(m2)
+ok3  = not na(c3)  and not na(m3)
+ok4  = not na(c4)  and not na(m4)
+ok5  = not na(c5)  and not na(m5)
+ok6  = not na(c6)  and not na(m6)
+ok7  = not na(c7)  and not na(m7)
+ok8  = not na(c8)  and not na(m8)
+ok9  = not na(c9)  and not na(m9)
+ok10 = not na(c10) and not na(m10)
+ok11 = not na(c11) and not na(m11)
+ok12 = not na(c12) and not na(m12)
+ok13 = not na(c13) and not na(m13)
+ok14 = not na(c14) and not na(m14)
+ok15 = not na(c15) and not na(m15)
+ok16 = not na(c16) and not na(m16)
+ok17 = not na(c17) and not na(m17)
+
+on1  = ok1  and c1  >= m1
+on2  = ok2  and c2  >= m2
+on3  = ok3  and c3  >= m3
+on4  = ok4  and c4  >= m4
+on5  = ok5  and c5  >= m5
+on6  = ok6  and c6  >= m6
+on7  = ok7  and c7  >= m7
+on8  = ok8  and c8  >= m8
+on9  = ok9  and c9  >= m9
+on10 = ok10 and c10 >= m10
+on11 = ok11 and c11 >= m11
+on12 = ok12 and c12 >= m12
+on13 = ok13 and c13 >= m13
+on14 = ok14 and c14 >= m14
+on15 = ok15 and c15 >= m15
+on16 = ok16 and c16 >= m16
+on17 = ok17 and c17 >= m17
+
+// Lokale Arrays für Tabelle und Alarm (keine request.security darin)
+actArr  = array.from(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17)
+okArr   = array.from(ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8, ok9, ok10, ok11, ok12, ok13, ok14, ok15, ok16, ok17)
+onArr   = array.from(on1, on2, on3, on4, on5, on6, on7, on8, on9, on10, on11, on12, on13, on14, on15, on16, on17)
+cArr    = array.from(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17)
+mArr    = array.from(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16, m17)
+nameArr = array.from("S&P 500", "Nasdaq Comp.", "Dow Jones", "Nikkei 225", "FTSE 100", "DAX", "CAC 40", "Hang Seng", "ASX 200", "TSX Comp.", "KOSPI", "Euro Stoxx 50", "EEM (Schwellenl.)", "EFA (Industriel.)", "TLT (US-Anleihen)", "Gold", "Bitcoin")
+
+// letzter Handelstag des Monats = Tagesbalken schließt zusammen mit dem Monatsbalken
+isMonthEnd = time_close == time_close("M")
+
+// Zustand am vorigen Monatsende (nur an Monatsenden aktualisiert)
+var array<bool> prevOn = array.new<bool>(17, false)
+var bool havePrev = false
+
+// Alarm am Monatsende: Liste LONG/FLAT und Wechsel gegenüber dem vorigen Monatsende
+if isMonthEnd
+    longNames = ""
+    flatNames = ""
+    changes = ""
+    for i = 0 to 16
+        if array.get(actArr, i) and array.get(okArr, i)
+            nm = array.get(nameArr, i)
+            if array.get(onArr, i)
+                longNames := longNames == "" ? nm : longNames + ", " + nm
+            else
+                flatNames := flatNames == "" ? nm : flatNames + ", " + nm
+            if havePrev and array.get(onArr, i) != array.get(prevOn, i)
+                dirTxt = array.get(onArr, i) ? "LONG" : "FLAT"
+                changes := changes == "" ? nm + " -> " + dirTxt : changes + ", " + nm + " -> " + dirTxt
+    if longNames == ""
+        longNames := "keine"
+    if flatNames == ""
+        flatNames := "keine"
+    nOnAlert = 0
+    nOkAlert = 0
+    for i = 0 to 16
+        if array.get(actArr, i) and array.get(okArr, i)
+            nOkAlert := nOkAlert + 1
+            if array.get(onArr, i)
+                nOnAlert := nOnAlert + 1
+    investPct = nOkAlert > 0 ? 100.0 * nOnAlert / nOkAlert : 0.0
+    msg = "Trendfilter MA" + str.tostring(maLen) + ": LONG: " + longNames + " | FLAT: " + flatNames + " | Investiert " + str.tostring(investPct, "#.#") + " % (gleichgewichtet, ohne Hebel)"
+    if changes != ""
+        msg := msg + " | Wechsel: " + changes
+    alert(msg, alert.freq_once_per_bar_close)
+    for i = 0 to 16
+        array.set(prevOn, i, array.get(onArr, i))
+    havePrev := true
+
+// Zielgewichte (Korb-Variante wie im Lab-Test H6): jeder aktive Markt mit Daten bekommt 1 / Anzahl Märkte.
+// Steht der Markt auf FLAT, bleibt sein Anteil in Cash. Kein Hebel.
+nValid = 0
+for i = 0 to 16
+    if array.get(actArr, i) and array.get(okArr, i)
+        nValid := nValid + 1
+wEach = nValid > 0 ? 100.0 / nValid : 0.0
+
+// Dashboard-Tabelle (oben rechts): Kopf, eine Zeile je aktivem Markt, Zusammenfassung, Stand
+// Zeilen: 1 Kopf + 17 Märkte + 3 Zusammenfassung = 21 (Indizes 0..20), Spalten: 4 (Indizes 0..3)
+if barstate.islast
+    var table tb = table.new(position.top_right, 4, 21, border_width = 1)
+    table.cell(tb, 0, 0, "Markt", text_color = color.white, bgcolor = color.gray)
+    table.cell(tb, 1, 0, "Signal", text_color = color.white, bgcolor = color.gray)
+    table.cell(tb, 2, 0, "Abstand zum MA", text_color = color.white, bgcolor = color.gray)
+    table.cell(tb, 3, 0, "Zielgewicht", text_color = color.white, bgcolor = color.gray)
+    rowN = 1
+    nLong = 0
+    nData = 0
+    for i = 0 to 16
+        if array.get(actArr, i)
+            okI = array.get(okArr, i)
+            onI = array.get(onArr, i)
+            table.cell(tb, 0, rowN, array.get(nameArr, i), text_color = color.white, bgcolor = color.gray)
+            if okI
+                table.cell(tb, 1, rowN, onI ? "LONG" : "FLAT", text_color = color.white, bgcolor = onI ? color.green : color.red)
+                table.cell(tb, 2, rowN, str.tostring((array.get(cArr, i) / array.get(mArr, i) - 1) * 100, "#.#") + " %")
+                table.cell(tb, 3, rowN, onI ? str.tostring(wEach, "#.#") + " %" : "0 % (Cash)")
+                nData := nData + 1
+                if onI
+                    nLong := nLong + 1
+            else
+                table.cell(tb, 1, rowN, "–", text_color = color.white, bgcolor = color.gray)
+                table.cell(tb, 2, rowN, "–")
+                table.cell(tb, 3, rowN, "–")
+            rowN := rowN + 1
+    table.cell(tb, 0, rowN, "Long: " + str.tostring(nLong) + " von " + str.tostring(nData), text_color = color.white, bgcolor = color.gray)
+    table.cell(tb, 0, rowN + 1, "Investiert: " + str.tostring(nData > 0 ? nLong * wEach : 0.0, "#.#") + " %, Cash: " + str.tostring(nData > 0 ? 100.0 - nLong * wEach : 100.0, "#.#") + " %", text_color = color.white, bgcolor = color.gray)
+    table.cell(tb, 0, rowN + 2, isMonthEnd ? "Monat bestätigt" : "vorläufig (Monat läuft)", text_color = color.white, bgcolor = color.gray)

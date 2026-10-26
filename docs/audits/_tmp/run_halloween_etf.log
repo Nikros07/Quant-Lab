@@ -1,0 +1,23 @@
+1 Strategien, Zeitraum bis 2022-12-31, exec=open
+  ok  halloween_nov_apr_equity_etf (3 Läufe)
+
+# Backtest-Ergebnis `audit_halloween_nov_apr_equity_etf` (bis 2022-12-31, Ausführung: open, Kosten ×1.0)
+
+Läufe: **3** (inkl. Varianten, alle zählen als Versuche für den Deflated Sharpe). Streuung der Tages-Sharpe über alle Läufe: 1.74e-05. PBO (gemeinsames Fenster ab 2004-01-01, 3 Läufe): **0.39**.
+
+Kosten sind enthalten (5 bps pro Seite Standard), Steuern NICHT. Benchmarks: SPY Buy&Hold, 60/40 (SPY/IEF).
+
+- **SPY**: CAGR 9.5%, Vol 18.9%, Sharpe 0.46, MaxDD -55.2%
+- **60/40**: CAGR 7.7%, Vol 10.6%, Sharpe 0.64, MaxDD -32.5%
+- **MKT**: CAGR 9.8%, Vol 17.5%, Sharpe 0.45, MaxDD -84.1%
+
+## Rangliste nach Sharpe
+
+| Lauf | Fam. | ab | Jahre | CAGR | Vol | Sharpe | MaxDD | ΔSharpe vs SPY (90%-KI) | p | 5J-Fenster>SPY | DSR | Umsatz/J | Kosten/J |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| halloween_nov_apr_equity_etf:cash_ief | calendar | 2002-10 | 20.2 | 8.0% | 14.7% | 0.52 | -35.6% | 0.01 (-0.30…0.33) | 0.465 | 45% | 0.981 | 2.0 | 0.08% |
+| halloween_nov_apr_equity_etf | calendar | 1993-04 | 29.7 | 7.5% | 13.4% | 0.45 | -34.6% | -0.01 (-0.22…0.22) | 0.540 | 44% | 0.983 | 1.0 | 0.04% |
+| halloween_nov_apr_equity_etf:efa | calendar | 2001-10 | 21.2 | 6.1% | 14.8% | 0.39 | -33.9% | -0.05 (-0.33…0.24) | 0.635 | 39% | 0.937 | 1.0 | 0.04% |
+
+Geschrieben: results/SUMMARY_audit_halloween_nov_apr_equity_etf.md, summary_audit_halloween_nov_apr_equity_etf.csv
+EXIT=0

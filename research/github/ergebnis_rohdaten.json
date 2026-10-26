@@ -1,0 +1,251 @@
+[
+ {
+  "topic": "Trendfolge und Moving-Average-Timing ueber mehrere Anlageklassen (Faber GTAA, 10-Monats-SMA, Trendfilter mit Anleihen-Ersatz, Whipsaw-Schutz, Hysterese, Mehrfach-Fenster)",
+  "repos": [
+   {
+    "name": "letianzj/QuantResearch (Datei backtest/bt/mebane_faber_taa.py)",
+    "url": "https://github.com/letianzj/QuantResearch",
+    "license": "MIT",
+    "stars": 3048,
+    "last_push": "2023-08-26",
+    "rule": "Fuenf ETFs (SPY, EFA, TIP, GSG, VNQ) zu je 19 Prozent Zielgewicht. Pro ETF long, wenn der 20-Tage-Mittelwert ueber dem 200-Tage-Mittelwert liegt, sonst Cash. Signal und Umschichtung am letzten Handelstag des Monats. Der Rest bleibt in Cash, keine Verzinsung.",
+    "rigor": "Keine Out-of-Sample-Pruefung, nur Backtest 2010-2019. Kommission 0,1 Prozent, kein Slippage. Moegliches Look-ahead: Mittelwerte enthalten den Schlusskurs des Signaltags, Orders werden zum Schlusskurs des selben Tages berechnet. Die Doku nennt 200 Tage '10 Monate', das ist ungefaehr richtig.",
+    "idea": "Dual-MA-Timing 20/200 Tage pro Anlageklasse mit Hysterese-Band (z.B. Einstieg erst bei SMA20 > SMA200 * 1,01, Ausstieg bei SMA20 < SMA200 * 0,99) und Ausfuehrung am Folgetag-Open, um Whipsaw-Umschaltungen zu reduzieren.",
+    "new_vs_tested": "teilweise: Schnellere Signale waren schlechter getestet, aber ein 20/200-Crossover mit Band und Verzoegerung ist nicht als Test dokumentiert. Die Idee ist nur dann neu, wenn Band und Verzoegerung dazukommen."
+   },
+   {
+    "name": "federicogarzarelli/portfolio-allocation",
+    "url": "https://github.com/federicogarzarelli/portfolio-allocation",
+    "license": "GPL-3.0",
+    "stars": 13,
+    "last_push": "2021-05-20",
+    "rule": "Trendfilter: liegt der Kurs eines Assets unter seinem SMA (Fenster 252 Tage bei Tagesdaten, 5 Jahre bei Jahresdaten), wird das Gewicht auf null gesetzt und als Cash gehalten. Sonst bleibt das Gewicht der Basisstrategie (gleich oder Risk Parity). Neuausrichtung alle 30 Bars.",
+    "rigor": "Keine Transaktionskosten, keine Out-of-Sample-Pruefung, Backtest startet nach Mindestlookback. Ein offenes To-do lautet, Geldmarkt statt Cash fuer ausgeschlossene Assets zu nutzen, es ist nicht umgesetzt.",
+    "idea": "Wenn der Kurs eines Assets unter seinem 252-Tage-SMA liegt, wird der Anteil nicht in Cash, sondern in TLT (Langlaufende US-Staatsanleihen) gehalten, rebalanciert alle 30 Tage, Kosten 10 Basispunkte pro Seite.",
+    "new_vs_tested": "ja, teilweise: Cash-Ersatz durch Anleihen/Gold ist in den bisherigen Tests nicht als Test belegt. Die Basis (Trendfilter mit 252-Tage-SMA) ist aber wie der bestehende Trendfilter, daher nur der Cash-Ersatz ist neu."
+   },
+   {
+    "name": "Kevin-Liu-PU/trend-backtest",
+    "url": "https://github.com/Kevin-Liu-PU/trend-backtest",
+    "license": "keine Lizenz (GitHub API: license null)",
+    "stars": 0,
+    "last_push": "2026-10-07",
+    "rule": "Nach jedem Schluss wird das Ziel Cash oder Aktien gesetzt, abhaengig davon, ob der Kurs ueber dem SMA liegt; bei Gleichheit bleibt das bisherige Ziel. Ausfuehrung mit einer Sitzung Verzoegerung. Ein expandierender Walk-Forward-Prozess waehlt pro Block das Fenster aus SMA150, SMA200 oder SMA250 nur mit Daten vor dem Block.",
+    "rigor": "Gut dokumentiert: Walk-Forward kausal, Kosten 10 Basispunkte pro Seite (Umschalten Cash-Aktien kostet zwei Seiten), Verzoegerung eingebaut. Schwaeche: Alle Daten sind synthetisch, es gibt keine Renditezahlen im README, nur einen Verweis auf einen HTML-Report. Kein Nachweis fuer praediktive Wirkung.",
+    "idea": "Das SMA-Fenster wird jaehrlich per Walk-Forward aus {150, 200, 250} Tagen gewaehlt, nur mit Daten bis zum Startpunkt des Blocks, und Umschaltungen kosten 10 Basispunkte pro Seite.",
+    "new_vs_tested": "ja: Adaptive Fensterwahl per Walk-Forward ist nicht in der Liste der bisherigen Tests. Nur als Idee nennen, da keine Lizenz vorliegt und der Code nicht uebernommen werden darf."
+   },
+   {
+    "name": "SimonKreis/keller-strategies",
+    "url": "https://github.com/SimonKreis/keller-strategies",
+    "license": "MIT",
+    "stars": 0,
+    "last_push": "2026-10-12",
+    "rule": "Python-Engine fuer TAA-Strategien (7 Familien). Die GTAA-Regel ist im README nicht spezifiziert, das Repo ist vor allem als Validierungsvorbild relevant.",
+    "rigor": "Sehr sauber: Ausfuehrung am Folgetag, Kosten 0,1 Prozent pro Seite, PBO-Schaetzung, Rangkorrelation ueber Teilperioden. Kein klarer Out-of-Sample-Holdout beschrieben. GTAA nicht unter den Quellen-verifizierten Strategien.",
+    "idea": "keine (nur als Vorlage fuer Pruefmethodik nutzbar: PBO-Schaetzung und Teilperioden-Rangkorrelation fuer unsere Mehrfach-Fenster-Tests).",
+    "new_vs_tested": "ja, als Methode: Wir haben PBO bzw. Ueberanpassungs-Pruefung vermutlich nicht gemacht. Kein neues Signal."
+   }
+  ],
+  "top_ideas": [
+   "Wenn der Monatsschluss eines Assets ueber dem 10-Monats-SMA liegt, wird long gehalten, und der Ausstieg erfolgt erst, wenn er um mehr als 1 Prozent unter das Band faellt (Hysterese), Umschaltungen werden am Folgemonat-Open ausgefuehrt.",
+   "Wenn der Kurs eines Assets unter seinem 252-Tage-SMA liegt, wird der Anteil statt in Cash in TLT gehalten, rebalanciert wird alle 30 Handelstage mit 10 Basispunkten Kosten pro Seite.",
+   "Das SMA-Fenster wird jaehrlich per Walk-Forward aus {150, 200, 250} Tagen gewaehlt, wobei die Auswahl nur Daten vor dem Block nutzt und jeder Wechsel zwischen Cash und Aktien 2 x 10 Basispunkte kostet."
+  ],
+  "report": "Kein .md-Bericht geschrieben. Die Ergebnisse stehen in diesem Output. Grund: Die Vorgabe fuer Subagenten verbietet Berichtsdateien; das Zielverzeichnis C:\\Users\\spide\\Desktop\\Projekte\\Quant-Lab\\research\\github\\01-trend-timing.md bleibt daher ungeschrieben.",
+  "problems": "GitHub-Suche per API lief in das Limit (HTTP 403, Such-Limit 10/min); danach nur noch WebSearch/WebFetch. Gesamt genutzte GitHub-API-Anfragen: 6 (davon 3 Suche, 4 Repo-Metadaten, eine Suche gescheitert). Nicht geprueft: josephstorey06/Backtest-Project, dingandrew07/mebfaber_gtaa_model_backtest, Vibe-Trading. Die Repo-Dateien wurden nur ueber WebFetch der Seiten gelesen, nicht vollstaendig, und nicht ausgefuehrt. Kevin-Liu-PU/trend-backtest hat keine Lizenz; die Idee ist nur als Idee nennbar. Der MCP-Server plugin:github meldete einen Verbindungsfehler; wurde nicht genutzt."
+ },
+ {
+  "topic": "Risikosteuerung: Volatilitaets-Targeting, Risk Parity, Drawdown-Kontrolle, Vol-Skalierung mit Trendfilter",
+  "repos": [
+   {
+    "name": "Hugues-hash/volatility-strategy-backtesting",
+    "url": "https://github.com/Hugues-hash/volatility-strategy-backtesting",
+    "license": "keine Lizenz (API: null)",
+    "stars": 0,
+    "last_push": "2026-09-26",
+    "rule": "Sechs Volatilitaetsprognosen (Rolling, EWMA, GARCH, GJR-GARCH, EGARCH, Random Forest auf HAR-Features) steuern SPY per Volatilitaets-Targeting: Ziel 10 % p.a., Hebel max. 1.5, Rest Cash, Neugewichtung taeglich; Kosten 5 bp pro Positionsaenderung. Prognosen werden zusaetzlich als 1-Tages-VaR (Kupiec, Christoffersen) und per Diebold-Mariano geprueft.",
+    "rigor": "Walk-forward, Modelle alle 21 Tage neu geschaetzt, Garman-Klass-Skalierung nur auf den ersten zwei Jahren gefittet (kein offensichtlicher Look-ahead), Kosten enthalten, Zweitindex FTSE. Schwaechen: nur 5 bp Kosten, Sharpe-Gewinn klein (0.64 auf 0.77 mit Rolling-Prognose), FTSE-Sharpe sinkt; Kennzahlen stehen nur im README, keine Konfidenzintervalle. Skeptisch lesen.",
+    "idea": "Trendfilter-Overlay: Wenn das Monatsend-Signal long ist, halte SPY mit Gewicht w = min(1.5; 0.10 / sigma_hat), sigma_hat = annualisierte 21-Tage-Std. der Tagesrenditen; sonst Cash. Gewicht nur am Monatsende neu setzen oder wenn |Delta w| > 0.10; Kosten 5 bp je Gewichtsaenderung. Ziel: Turnover unter 2 statt 7 bis 30 pro Jahr bei aehnlichem Drawdown-Schutz.",
+    "new_vs_tested": "teilweise: Volatilitaets-Targeting allein ist laut Vorgabe getestet. Neu ist die Kombination mit dem Monatsend-Trendfilter, der monatlichen Neugewichtung und dem Handelsband, das die Turnover-Kosten gezielt senkt (im Repo war der Turnover der Haupt-Verlustfaktor der praeziseren Prognosen)."
+   },
+   {
+    "name": "JunyuanDing/Portfolio-Optimization-ETF",
+    "url": "https://github.com/JunyuanDing/Portfolio-Optimization-ETF",
+    "license": "keine Lizenz (API: null)",
+    "stars": 4,
+    "last_push": "2026-08-15",
+    "rule": "Monatlich nach Schluss: 12-1-Momentum (P_t-21 / P_t-252 - 1) plus 0.5 mal Trend (200-Tage-MA) als Score; Optimierung mit 20-Tage-EWMA-Kovarianz und dynamischem Zielrisiko sigma*_t = clip(0.10 / v_t; 0.04; 0.16), v_t = Stress-Verhaeltnis aus 20-Tage-EWMA-Vol und 252-Tage-Referenzvol des Risikokorbs; Cash-Sleeve BIL; Einzelgewicht max. 0.25; Transaktionskosten als L1-Strafterm.",
+    "rigor": "Nur Information bis zum Monatsende genutzt (Momentum mit Ueberspringen des letzten Monats, Umsetzung ab naechstem Handelstag), Kosten 10 bp, Parameter als fix ex ante deklariert. Schwaechen: README enthaelt keine Ergebnistabellen (werden erst von Skripten erzeugt), Daten nur bis 2026-01-31, Out-of-sample-Behauptung nicht belegt, kein Vergleich mit einfacher Vol-Skalierung gezeigt.",
+    "idea": "Stress-adjustiertes Zielrisiko: Setze das Zielrisiko sigma*_t = clip(0.10 / v_t; 0.04; 0.16) mit v_t = EWMA20-Vol / 252-Tage-Vol des Korbs. Der Anteil im Markt ist min(1; sigma*_t / sigma_Korb), der Rest Cash. In ruhigen Phasen wird mehr investiert, bei Stress frueh reduziert. Test: nur bei aktivem Trendfilter anwenden, Kosten 10 bp.",
+    "new_vs_tested": "ja, mit Einschraenkung: die Kombination aus Stress-Verhaeltnis und variablem Zielrisiko ist nicht in der Liste getestet. Der Kern (Vol-Targeting) ist bekannt, das variable Ziel nicht."
+   },
+   {
+    "name": "mehul532/time-series-momentum-backtester",
+    "url": "https://github.com/mehul532/time-series-momentum-backtester",
+    "license": "MIT",
+    "stars": 1,
+    "last_push": "2026-10-01",
+    "rule": "Long/Cash-Regel: Position auf SPY (oder ETF-Korb) wird gehalten, wenn die 252-Tage-Rendite positiv ist; Signal um einen Tag verschoben; Kosten 5 bp pro Positionsaenderung; Multi-Asset-Variante mit Equal-Weight ueber 10 ETFs (SPY, QQQ, IWM, TLT, IEF, GLD, DBC, EFA, EEM, VNQ), Cash wenn kein ETF aktiv.",
+    "rigor": "Sauber: explizite Ein-Tages-Verzoegerung, Kosten, Parametersweep (Lookback 21 bis 252, Kosten 0 bis 25 bp), Walk-forward-Modul, Limitations-Abschnitt. Zahlen liegen nur als Bilder vor, nicht als Tabelle; keine Konfidenzintervalle.",
+    "idea": "Pruefe Trendfilter-Lookback 252 gegen 126 und 189 Tage mit Kosten 25 bp im Sweep; wenn ein Plateau existiert, nimm den Mittelwert statt des Einzelwerts 252.",
+    "new_vs_tested": "nein: 12-Monats-Momentum und Trendfilter mit Kosten sind bereits getestet (Dual-Momentum, Monatsend-Filter). Nur als Referenz fuer saubere Umsetzung geeignet."
+   },
+   {
+    "name": "LucasIsntCoding/risk-parity-portfolio",
+    "url": "https://github.com/LucasIsntCoding/risk-parity-portfolio",
+    "license": "keine Lizenz (API: null)",
+    "stars": 0,
+    "last_push": "2026-03-07",
+    "rule": "Risk Parity: Gewichte so, dass jede Anlage den gleichen Anteil am Portfolio-Risiko traegt (exakte Loesung per Optimierung; Naeherung: inverse Volatilitaet). Rollierendes Schaetzfenster, periodisches Rebalancing, turnover-basierte Kosten; Benchmarks Equal Weight und Mean-Variance.",
+    "rigor": "Rollierende Schaetzung und Kosten-Modell vorhanden; aber keine dokumentierten Ergebnisse, keine Out-of-sample-Aussage im README, Synthetik-Daten als Standard. Als Methodik brauchbar, als Renditebeleg nicht.",
+    "idea": "Im 17-Maerkte-Korb: Gewichte jede aktive Position mit 1/sigma_i (60-Tage-Vol, Monatsrebalancing, Summe 1, Rest Cash bei inaktiven Maerkten), Kosten 10 bp je Gewichtsaenderung; Vergleich gegen Gleichgewichtung des Korbs.",
+    "new_vs_tested": "ja: Gewichtung nach Risiko im Korb ist laut Vorgabe nicht getestet (Korb-Test bisher ohne Risiko-Gewichtung). Die Methode selbst ist Standard."
+   },
+   {
+    "name": "PyPortfolioOpt/PyPortfolioOpt (Referenz, Bibliothek)",
+    "url": "https://github.com/PyPortfolio/PyPortfolioOpt",
+    "license": "MIT",
+    "stars": 6112,
+    "last_push": "2026-07-07",
+    "rule": "Bibliothek mit Efficient Frontier, Black-Litterman und Hierarchical Risk Parity (HRP). Keine eigene Handelsregel, nur Gewichtungsverfahren.",
+    "rigor": "Etablierte Bibliothek, Dokumentation vorhanden; Backtests sind nicht Teil des Projekts, Look-ahead-Pruefung entfaellt damit.",
+    "idea": "HRP als Alternative zur inversen Volatilitaet fuer die Korb-Gewichtung (Idee 3), nur falls Idee 3 positiv ausfaellt.",
+    "new_vs_tested": "nein als Strategie, ja als Werkzeug fuer Gewichtung."
+   }
+  ],
+  "top_ideas": [
+   "Trendfilter-Overlay mit Volatilitaets-Skalierung: Wenn das Monatsend-Signal long ist, halte SPY mit Gewicht min(1.5; 0.10 / sigma_hat) (sigma_hat = annualisierte 21-Tage-Std.), sonst Cash; Gewicht nur am Monatsende oder bei |Delta w| > 0.10 neu setzen, Kosten 5 bp; Ziel: Turnover unter 2 pro Jahr bei aehnlichem Drawdown-Schutz.",
+   "Stress-adjustiertes Zielrisiko: sigma*_t = clip(0.10 / v_t; 0.04; 0.16), v_t = EWMA20-Vol / 252-Tage-Vol des Korbs; Marktanteil min(1; sigma*_t / sigma_Korb), Rest Cash, nur bei aktivem Trendfilter, Kosten 10 bp.",
+   "Risiko-Gewichtung im 17-Maerkte-Korb: aktive Positionen mit 1/sigma_i (60-Tage-Vol) gewichten, Summe 1, Monatsrebalancing, Kosten 10 bp; Vergleich gegen Gleichgewichtung des Korbs."
+  ],
+  "report": "Keine Datei geschrieben. Die Agent-Regeln verbieten Berichts-Markdown; der Bericht steht vollstaendig in diesem Output. Falls die Datei C:\\Users\\spide\\Desktop\\Projekte\\Quant-Lab\\research\\github\\03-risiko-volatilitaet.md trotzdem gewuenscht ist, kann der Aufrufer sie aus den Feldern repos und top_ideas erzeugen.",
+  "problems": "GitHub-Suchendpunkt war ohne Token gesperrt (HTTP 403, Rate-Limit). Vier Suchanfragen geprueft, drei davon 403. Ersatz: WebSearch, plus sechs GitHub-Core-API-Aufrufe und README-Abrufe per raw.githubusercontent.com (keine Repo-Clones, keine Code-Ausfuehrung). Nicht geprueft: die Signal-Dateien der Repos (nur READMEs), rclem07/Volatility-Forecasting-Research-Platform, Melinda111-F/volatility-aware-spy-backtest, bottama/trading-strategy-backtest. Zusaetzlich habe ich versehentlich einen Hintergrund-Task-Chip erstellt; er wurde sofort wieder zurueckgezogen (task_112e257d). Repo Hugues-hash hat keine Lizenz und 0 Sterne; Kennzahlen der Repos sind Selbstangaben aus den READMEs."
+ },
+ {
+  "topic": "Pine-Script-Strategien auf GitHub (Trendfilter, Dual Momentum, Faber, Vol-Targeting; Positionsgroesse, Cash, Ausfuehrung, Mehrmarkt, Alarme)",
+  "repos": [
+   {
+    "name": "jayadevrana/free-pine-script-indicators",
+    "url": "https://github.com/jayadevrana/free-pine-script-indicators",
+    "license": "MPL-2.0 (laut API). Sterne: 1. Letzter Push: 2026-10-12 (Repo angelegt 2026-09-19)",
+    "rule": "EMA-Trend-Strategie: Long, wenn EMA(9) die EMA(21) von unten kreuzt und Close > EMA(200); Short spiegelbildlich. Exit ueber ATR(14): Stop 2 ATR, Take-Profit 3 ATR. Sizing: percent_of_equity 10 %, Kommission 0,05 %, Slippage 2 Ticks.",
+    "rigor": "Kosten im Code gesetzt, Signale auf Schlusskursen, Ausfuehrung ueber Pine-Standard (naechster Open), kein offensichtlicher Look-ahead. Schwach: Sizing ist Zinseszins, keine Out-of-sample-Pruefung, keine Kennzahlen in der README trotz 'honest backtests'.",
+    "idea": "Feste Ordergroesse statt Zinseszins: qty = Startkapital/Close (strategy.fixed) gegen percent_of_equity 100 % mit identischem Monatsfilter vergleichen; Kosten 0,05 % + 2 Ticks als Vorgabe uebernehmen.",
+    "new_vs_tested": "ja: Die Umsetzung in Pine (Sizing, Kosten, Ausfuehrung) ist nicht getestet. Die Signalregel EMA-Kreuz plus EMA200 ist in unseren Tests nicht enthalten, aber schwach dokumentiert."
+   },
+   {
+    "name": "casoon/pine-scripts",
+    "url": "https://github.com/casoon/pine-scripts",
+    "license": "MIT (freie Scripte), Premium proprietaer. Sterne: 9. Letzter Push: 2026-10-14",
+    "rule": "README listet 7 Strategien (Chandelier Flip Radar, WaveTrend v4, Smooth Trend Radar u. a.) mit Exit-Typ (Trailing, Fixed TP, Pivot ATR) und Status 'Promising' / 'Not ready'. Regeln stehen in Assessment-Dateien, nicht gelesen.",
+    "rigor": "Unbekannt. README nennt keine Sizing-, Kosten- oder Ausfuehrungsparameter; keine Monats- oder Trendfilter-Strategie erkennbar.",
+    "idea": "keine, fuer unseren Monatsfilter nicht geeignet; Assessment-Dateien waeren der naechste Lesepunkt.",
+    "new_vs_tested": "ja, aber keine verwertbare Regel gelesen."
+   },
+   {
+    "name": "11Muhil/FibTrend-Pro-Strategy_Pinescript",
+    "url": "https://github.com/11Muhil/FibTrend-Pro-Strategy_Pinescript",
+    "license": "nicht geprueft (Feld im API-Ausschnitt abgeschnitten). Sterne: 3. Letzter Push: 2025-02-11",
+    "rule": "Laut Beschreibung (Code nicht gelesen): Long bei Kurs ueber Fib 0,618, Volumenspitze und Kurs ueber 200-SMA; Exit unter Fib 0,5 oder TP 1 % bzw. ATR-basiert.",
+    "rigor": "Nicht geprueft. Repo klein (8 KB), keine Out-of-sample-Doku erkennbar.",
+    "idea": "keine: Fib-Retracement-Einstieg mit Volumenfilter ist ohne Monats-Logik und ohne Mehrmarkt-Test kein Kandidat.",
+    "new_vs_tested": "ja, aber nicht belegt."
+   },
+   {
+    "name": "LouisLetcher/quant-pine",
+    "url": "https://github.com/LouisLetcher/quant-pine",
+    "license": "API: Other (NOASSERTION). README: freie Scripte MIT, Premium proprietaer. Sterne: 23. Letzter Push: 2026-07-25",
+    "rule": "README beschreibt nur Struktur und Premium-Modell; keine Strategieregeln gelesen.",
+    "rigor": "Unbekannt.",
+    "idea": "keine. Wegen gemischter Lizenz nur als Ideenquelle markieren.",
+    "new_vs_tested": "nicht bewertbar, keine Regel gelesen."
+   }
+  ],
+  "top_ideas": [
+   "Feste Ordergroesse statt Zinseszins: Position = 100 % des Startkapitals (strategy.fixed, qty = initial_capital / close) gegen percent_of_equity = 100 % mit identischem Monatsfilter vergleichen; Kosten 0,05 % Kommission plus 2 Ticks Slippage.",
+   "Monatsfilter mit Pine-Ausfuehrung: Signal am letzten Handelstag des Monats auf Schlusskurs (Monatsschluss >= Mittel der letzten 12 Monatsschluesse), Order zum naechsten Open fuellen (process_orders_on_close = false), Kosten wie oben.",
+   "Cash-Verzinsung extern rechnen: Cash-Tage mit Tagesgeldsatz verzinsen und Ergebnis vor und nach Verzinsung ausweisen; in keinem gelesenen Pine-Repo vorhanden, daher neu gegenueber unseren Tests."
+  ],
+  "report": "C:\\Users\\spide\\Desktop\\Projekte\\Quant-Lab\\research\\github\\04-pine-tradingview.md",
+  "problems": "GitHub-Suchendpunkt lieferte beim zweiten Versuch HTTP 403 (Suchlimit ohne Token), danach WebSearch genutzt. Core-API und raw-Dateien funktionierten. Gelesen: 4 Repos (README bzw. Strategie-Datei), 3 weitere nur als Suchtreffer (hasnocool/tradingview-pine-scripts, handiko/RSI-2-Stock-Trading-Strategy-Pinescript, plus 11Muhil nur ueber API-Beschreibung). Keine Repos fuer Dual Momentum, Faber-Timing oder Vol-Targeting in Pine gefunden. Die Lizenz von 11Muhil wurde nicht geprueft. Die Pine-Ausfuehrungsdetails (process_orders_on_close, Default-Fill am naechsten Open) sind nicht gegen die offizielle Pine-Doku verifiziert."
+ },
+ {
+  "topic": "Momentum-Rotation und Dual Momentum (GitHub, nur lesend)",
+  "repos": [
+   {
+    "name": "earaya/GEM",
+    "url": "https://github.com/earaya/GEM",
+    "stars": 1,
+    "license": "NOASSERTION (keine erkennbare Lizenz)",
+    "last_push": "2026-10-07",
+    "rule": "Monatsende: staerkerer 12-Monats-Return von SPY vs ACWX; liegt er ueber BIL, 100 % in diesem Aktien-ETF, sonst 100 % AGG. Gleichstand: SPY bzw. AGG. CLI-Tool, das nur eine Empfehlung ausgibt.",
+    "rigor": "Keine Backtest-Statistik im README; Signal nur aus abgeschlossenen Monatsenden, fail-closed bei Datenluecken. Keine Kosten-, Steuer- oder Out-of-Sample-Auswertung.",
+    "idea": "keine neue (Dual Momentum); nur Kombination mit Trendfilter am Bond-Leg waere Abweichung",
+    "new_vs_tested": "Nein. Dual Momentum ist getestet."
+   },
+   {
+    "name": "mehul532/time-series-momentum-backtester",
+    "url": "https://github.com/mehul532/time-series-momentum-backtester",
+    "stars": 1,
+    "license": "MIT",
+    "last_push": "2026-10-01",
+    "rule": "Pro Asset: 252-Tage-Rendite positiv -> long, sonst Cash (optional Defensiv-Proxy). Signal um einen Tag verschoben. Multi-Asset: aktive ETFs gleichgewichtet, sonst Cash. Kosten in bp bei Positionswechsel.",
+    "rigor": "Gut: explizite Ein-Tages-Verzoegerung, Kosten 0/5/10/25 bp, Lookback-Sweep 21-252, Walk-Forward im Code. Schwach: keine Kennzahlen im README, keine dokumentierte Out-of-Sample-Auswertung.",
+    "idea": "Wenn SPY-Monatsfilter Cash sagt, halte IEF nur bei eigenem Monatsend-Trend (>= 12-Monats-Mittel), sonst Cash. 5 bp Kosten, Start 2003, Vergleich mit Cash-Variante und Buy-and-Hold, getrennte Auswertung 2003-2012 und 2013-2026.",
+    "new_vs_tested": "Teilweise. Trendfilter getestet; Bonds als Cash-Ersatz nur im DM-Kontext getestet, ohne eigenen Filter am Ersatz-Asset."
+   },
+   {
+    "name": "Alesarabandi/Quantitative-Momentum-Strategy-Backtesting",
+    "url": "https://github.com/Alesarabandi/Quantitative-Momentum-Strategy-Backtesting",
+    "stars": 1,
+    "license": "MIT",
+    "last_push": "2025-11-04",
+    "rule": "Zwei Varianten auf Einzelaktien (S&P 500, STOXX 600): Skewness-Vorfilter dann Momentum-Top; oder Zeitreihen-Momentum-Filter dann Querschnitts-Momentum innerhalb der Gewinner.",
+    "rigor": "Schwach: keine Transaktionskosten, keine Out-of-Sample-Aufteilung, Survivorship-Bias nicht geklaert; Kennzahlen In-Sample, MaxDD -49 bis -64 %.",
+    "idea": "keine direkt verwertbare Regel; Skewness-Filter auf Index-Korb waere testbar, aber nicht belegt",
+    "new_vs_tested": "Nein fuer Dual Momentum (im Kern getestet). Skewness-Filter neu, aber nur auf Einzelaktien."
+   },
+   {
+    "name": "JaaasperLiu/robo-advisor",
+    "url": "https://github.com/JaaasperLiu/robo-advisor",
+    "stars": 9,
+    "license": "MIT",
+    "last_push": "2026-03-20",
+    "rule": "Zeitreihen-Momentum je ETF mit Monatsrebalancing, dynamische Allokation; Vergleich mit Risk Parity (inverse Volatilitaet); Gewichtsdeckel max_weight; Kosten in bp (tc_bps).",
+    "rigor": "Mittel bis gut: deterministischer Lauf mit Hash-Protokoll, Walk-Forward mit expandierenden Fenstern, Tests. Schwach: Monats-Turnover 2.03 (sehr hoch), unklar ob Tabelle netto ist; nur 8 ETFs, 2003-2021.",
+    "idea": "Aktive Assets nach 1/Vola(60 Tage) gewichten, Einzelgewicht max. 25 %, Rest Cash, Monatsend-Signal je Asset, 5 bp je Umschlag, Auswertung 2003-2012 und 2013-2026 getrennt.",
+    "new_vs_tested": "Teilweise. Vol-Targeting und Korb getestet; Kombination mit Gewichtsdeckel nur fuer aktive Assets nicht eindeutig getestet."
+   },
+   {
+    "name": "ericxuzhesheng/Trading-Crowding-Momentum-Strategy",
+    "url": "https://github.com/ericxuzhesheng/Trading-Crowding-Momentum-Strategy",
+    "stars": 1,
+    "license": "MIT",
+    "last_push": "2026-10-20",
+    "rule": "Score je Fonds: Rank(5-Tage-Return) + Rank(20-Tage-Return) - 0.65 * Rank(Crowding) - 0.1 * Rank(Vola 20); Crowding aus Turnover- und Umsatz-Anomalie (60 Tage); Signal um einen Tag verzoegert; woechentliche konvexe Optimierung mit 15 % Cap und L1-Turnover-Strafe.",
+    "rigor": "Gut dokumentiert: Signal-Lag, Kosten-Sweep 0-10 bp, Zeit-Split 2023, Datenfehler-Pruefung, Ablation ohne Crowding. Schwach: Zeit-Split im selben Datensatz (keine echte OOS), Parameter nicht robust geprueft; eigene Ablation zeigt Crowding-IC 0.013 vs 0.021 ohne Crowding (kein kausaler Beleg).",
+    "idea": "Monatsende: Long nur wenn SPY ueber 12-Monats-Mittel UND 60-Tage-Z-Score des SPY-Umsatzes < +1.0, sonst Cash. Test S&P 500 seit 2000, 5 bp Kosten, Vergleich mit reinem Trendfilter, getrennte Auswertung vor/nach 2013. Erwartung: eher Verlustreduktion als Renditegewinn.",
+    "new_vs_tested": "Ja. Handelsaktivitaets-/Umsatz-Filter wurde in unseren Tests nicht geprueft. Optimierer-Gewichte nicht uebernehmbar."
+   },
+   {
+    "name": "Alpharotationlab/US-ETF-Rotation-Model",
+    "url": "https://github.com/Alpharotationlab/US-ETF-Rotation-Model",
+    "stars": 1,
+    "license": "NOASSERTION (keine erkennbare Lizenz)",
+    "last_push": "2026-05-17",
+    "rule": "Alle 5 Handelstage: Ranking liquider US-ETFs nach 20-Tage-Momentum; nur Kurse ueber 200-Tage-MA; Top 3 halten, Rest Cash; 0.10 % Kosten je Seite.",
+    "rigor": "Schwach bis mittel: Kosten erwaehnt, Risiken benannt; nur In-Sample 2019-2026, kein Parameter-Sweep, Survivorship-Bias vom Autor eingeraeumt. CAGR 16.8 % vs SPY 17.6 %, MaxDD -23.6 % vs -33.7 %, Sharpe 0.94 vs 0.82; 2024 -20 Pp. gegen SPY.",
+    "idea": "Trendfilter je Asset: Im 17-Maerkte-Korb nur Assets ueber eigenem 10-Monats-Mittel, davon Top 3 nach 12-Monats-Momentum, gleichgewichtet, Rest Cash, 10 bp Kosten, Zeit-Split 2000-2026.",
+    "new_vs_tested": "Teilweise. Korb-Filter getestet; Top-3-Auswahl nach Momentum mit Asset-eigenem Filter unseres Wissens nicht getestet."
+   }
+  ],
+  "top_ideas": [
+   "Handelsaktivitaets-Filter: Monatsende long nur wenn SPY ueber dem 12-Monats-Mittel UND der 60-Tage-Z-Score des SPY-Umsatzes unter +1.0 liegt, sonst Cash; 5 bp Kosten, Vergleich mit reinem Trendfilter, Auswertung vor/nach 2013 getrennt (Quelle: ericxuzhesheng/Trading-Crowding-Momentum-Strategy, MIT).",
+   "Filter am Cash-Ersatz: Wenn der SPY-Monatsfilter Cash sagt, halte IEF nur bei eigenem Monatsend-Trend (>= 12-Monats-Mittel), sonst Cash; 5 bp Kosten, Start 2003, Vergleich mit Cash-Variante (Quelle: mehul532/time-series-momentum-backtester, MIT).",
+   "Asset-eigener Trendfilter mit Top-3-Auswahl: Im 17-Maerkte-Korb nur Assets ueber eigenem 10-Monats-Mittel, davon die 3 mit dem staerksten 12-Monats-Momentum gleichgewichtet, Rest Cash, 10 bp Kosten, Zeit-Split 2000-2026 (Quelle: Alpharotationlab/US-ETF-Rotation-Model, keine Lizenz, nur als Idee)."
+  ],
+  "report": "C:\\Users\\spide\\Desktop\\Projekte\\Quant-Lab\\research\\github\\02-momentum-rotation.md",
+  "problems": "Keine Rate-Limit-Probleme: 3 GitHub-Suchanfragen verwendet, READMEs per raw.githubusercontent (ohne API-Limit). Nicht gemacht wegen Anfragenlimit: Suche nach 'momentum turning points' und 'zipline momentum'. Der Code der Signal-Dateien wurde nicht gelesen, nur READMEs (Regeln daher aus Doku, nicht aus Code verifiziert). Hinweis: Die Lizenz 'NOASSERTION' bedeutet keine erkennbare Lizenz; Ideen nur als Idee genannt, kein Code uebernommen."
+ }
+]

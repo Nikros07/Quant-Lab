@@ -1,0 +1,8 @@
+InpSymbol=
+InpMaMonths=12
+InpExposure=1.0
+InpFixedLots=0.0
+InpMagic=20261013
+InpSlippage=30
+InpTradingOn=true
+InpLogCsv=true

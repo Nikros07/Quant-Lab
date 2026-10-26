@@ -1,0 +1,100 @@
+//@version=6
+// Quant-Lab: Trendfilter "Aktienindex oder Cash", Plus-Version (Signal-Takt wählbar)
+//
+// Zweck: mehr Trades zum Auswerten. Die Basis-Variante "Monatlich MA12 (geprüft)" ist exakt die
+// Logik von TrendFilter_MA12.pine (Version 1.1) und im Quant-Lab belegt.
+// Die anderen Takte (Wöchentlich SMA40, Täglich SMA200, Täglich SMA50/200 Kreuzung) sind nur
+// Hypothesen (Quelle: docs/HYPOTHESEN.md, H1–H4). Sie erzeugen wahrscheinlich mehr Kosten und Steuern.
+//
+// Regel (Long oder Cash, nie Short), am Entscheidungsbalken des gewählten Takts:
+//   Schluss >= MA * (1 + Puffer)  -> Long (voll investiert)
+//   Schluss <  MA * (1 - Puffer)  -> Cash
+//   dazwischen (Hysterese)        -> Zustand bleibt
+// Puffer 0 = Regel ohne Hysterese. H4 entspricht Puffer 1,0 im Takt "Täglich SMA200".
+// Orders füllen zur Eröffnung des nächsten Balkens.
+//
+// Vereinfachung Kreuzung: "Schluss" = SMA50, "MA" = SMA200 (Tageskerzen), dieselbe Zustandsmaschine,
+// also Gleichheit = an. Der Puffer wirkt dann als Band um die SMA200.
+// Alarm: alert() nur bei Wechsel des Zustands (nicht bei jedem Monatsende wie in v1.1).
+//
+// Hinweis: Der Strategy Tester verzinst Cash NICHT und kennt keine Steuern.
+// Quellen: Faber 2007 (SSRN 962461); Neely/Rapach/Tu/Zhou 2014. Keine Anlageberatung.
+strategy("Quant-Lab Trendfilter Plus", overlay = true, initial_capital = 10000,
+         default_qty_type = strategy.percent_of_equity, default_qty_value = 100,
+         commission_type = strategy.commission.percent, commission_value = 0.05,
+         pyramiding = 0, calc_on_every_tick = false, process_orders_on_close = false)
+
+mode      = input.string("Monatlich MA12 (geprüft)", "Signal-Takt",
+     options = ["Monatlich MA12 (geprüft)", "Wöchentlich SMA40", "Täglich SMA200", "Täglich SMA50/200 Kreuzung"])
+bandPct   = input.float(0.0, "Puffer in % (Hysterese)", minval = 0.0, maxval = 5.0, step = 0.5)
+useChart  = input.bool(true, "Signal aus dem Chart-Symbol (sonst Symbol unten)")
+altSym    = input.symbol("SP:SPX", "Alternatives Signal-Symbol (Preisindex)")
+showTable = input.bool(true, "Infotabelle anzeigen")
+qtyPct    = input.float(97.0, "Ordergröße in % des Eigenkapitals (Puffer gegen Kurslücken)", minval = 10.0, maxval = 100.0)
+fixedUsd  = input.float(0.0, "Feste Ordergröße in Kontowährung (0 = Zinseszins, sonst z. B. 10000)", minval = 0.0)
+sigSym    = useChart ? syminfo.tickerid : altSym
+
+// Alle request.security-Aufrufe auf Skriptebene, ohne lookahead (kein Repainting).
+[mClose, mMa]  = request.security(sigSym, "M", [close, ta.sma(close, 12)], lookahead = barmerge.lookahead_off)
+[wClose, wMa]  = request.security(sigSym, "W", [close, ta.sma(close, 40)], lookahead = barmerge.lookahead_off)
+[dClose, dMa]  = request.security(sigSym, "D", [close, ta.sma(close, 200)], lookahead = barmerge.lookahead_off)
+[dFast, dSlow] = request.security(sigSym, "D", [ta.sma(close, 50), ta.sma(close, 200)], lookahead = barmerge.lookahead_off)
+
+// Entscheidungsbalken: letzter Tagesbalken des Monats bzw. der Woche, bei Tages-Takten jeder Balken
+isMonthEnd  = time_close == time_close("M")
+isWeekEnd   = time_close == time_close("W")
+decisionBar = mode == "Monatlich MA12 (geprüft)" ? isMonthEnd : mode == "Wöchentlich SMA40" ? isWeekEnd : true
+
+// Vergleichswerte je nach Takt auswählen
+float sClose = mode == "Monatlich MA12 (geprüft)" ? mClose : mode == "Wöchentlich SMA40" ? wClose : mode == "Täglich SMA200" ? dClose : dFast
+float sMa    = mode == "Monatlich MA12 (geprüft)" ? mMa : mode == "Wöchentlich SMA40" ? wMa : mode == "Täglich SMA200" ? dMa : dSlow
+
+// Hysterese-Zustand, nur an Entscheidungsbalken mit gültigen Werten aktualisiert
+var bool stateOn = false
+var bool prevOn  = false
+var bool hasPrev = false
+var int firstTime = time
+
+bool decided = decisionBar and not na(sClose) and not na(sMa)
+
+if decided
+    upperBand = sMa * (1.0 + bandPct / 100.0)
+    lowerBand = sMa * (1.0 - bandPct / 100.0)
+    if sClose >= upperBand
+        stateOn := true
+    else if sClose < lowerBand
+        stateOn := false
+    // Alarm nur bei Zustandswechsel gegenüber dem vorherigen Entscheidungsbalken
+    if hasPrev and stateOn != prevOn
+        alert("Trendfilter Plus " + syminfo.ticker + ": " + (stateOn ? "LONG" : "FLAT") + " (" + mode + ")", alert.freq_once_per_bar_close)
+    prevOn  := stateOn
+    hasPrev := true
+    // Handel: Orders füllen zur Eröffnung des nächsten Balkens
+    if stateOn and strategy.position_size == 0
+        orderValue = fixedUsd > 0 ? math.min(fixedUsd, strategy.equity * qtyPct / 100.0) : strategy.equity * qtyPct / 100.0
+        strategy.entry("Long", strategy.long, qty = orderValue / close, comment = "Plus long")
+    else if not stateOn and strategy.position_size > 0
+        strategy.close("Long", comment = "Plus flat")
+
+plot(sMa, "MA", color = color.orange, linewidth = 2)
+bgcolor(stateOn ? color.new(color.green, 92) : color.new(color.red, 92), title = "Signal")
+
+// Laufzeit in Jahren (Kalenderzeit seit dem ersten Balken)
+elapsedYears = (time - firstTime) / (365.25 * 86400000.0)
+
+if showTable and barstate.islast
+    var table tPlus = table.new(position.top_right, 2, 7, border_width = 1)
+    table.cell(tPlus, 0, 0, "Modus", text_color = color.white, bgcolor = color.gray)
+    table.cell(tPlus, 1, 0, mode)
+    table.cell(tPlus, 0, 1, "Zustand", text_color = color.white, bgcolor = color.gray)
+    table.cell(tPlus, 1, 1, stateOn ? "LONG" : "FLAT", text_color = color.white, bgcolor = stateOn ? color.green : color.red)
+    table.cell(tPlus, 0, 2, "Schluss", text_color = color.white, bgcolor = color.gray)
+    table.cell(tPlus, 1, 2, na(sClose) ? "-" : str.tostring(sClose, "#.##"))
+    table.cell(tPlus, 0, 3, "MA", text_color = color.white, bgcolor = color.gray)
+    table.cell(tPlus, 1, 3, na(sMa) ? "-" : str.tostring(sMa, "#.##"))
+    table.cell(tPlus, 0, 4, "Abstand in %", text_color = color.white, bgcolor = color.gray)
+    table.cell(tPlus, 1, 4, (na(sClose) or na(sMa)) ? "-" : str.tostring((sClose / sMa - 1) * 100, "#.##") + " %")
+    table.cell(tPlus, 0, 5, "Abgeschlossene Trades", text_color = color.white, bgcolor = color.gray)
+    table.cell(tPlus, 1, 5, str.tostring(strategy.closedtrades))
+    table.cell(tPlus, 0, 6, "Trades pro Jahr", text_color = color.white, bgcolor = color.gray)
+    table.cell(tPlus, 1, 6, elapsedYears > 0 ? str.tostring(strategy.closedtrades / elapsedYears, "#.#") : "-")

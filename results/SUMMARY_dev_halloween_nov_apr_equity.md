@@ -1,0 +1,23 @@
+# Backtest-Ergebnis `dev_halloween_nov_apr_equity` (bis 2022-12-31, Ausführung: open, Kosten ×1.0)
+
+Läufe: **2** (inkl. Varianten, alle zählen als Versuche für den Deflated Sharpe). Streuung der Tages-Sharpe über alle Läufe: 1.00e-04. PBO (gemeinsames Fenster ab 2004-01-01, 0 Läufe): **–**.
+
+Kosten sind enthalten (5 bps pro Seite Standard), Steuern NICHT. Benchmarks: SPY Buy&Hold, 60/40 (SPY/IEF).
+
+- **SPY**: CAGR 9.5%, Vol 18.9%, Sharpe 0.46, MaxDD -55.2%
+- **60/40**: CAGR 7.7%, Vol 10.6%, Sharpe 0.64, MaxDD -32.5%
+- **MKT**: CAGR 9.8%, Vol 17.5%, Sharpe 0.45, MaxDD -84.1%
+
+## Rangliste nach Sharpe
+
+| Lauf | Fam. | ab | Jahre | CAGR | Vol | Sharpe | MaxDD | ΔSharpe vs SPY (90%-KI) | p | 5J-Fenster>SPY | DSR | Umsatz/J | Kosten/J |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| halloween_nov_apr_equity:dax | calendar | 1990-04 | 32.7 | 9.3% | 15.3% | 0.50 | -38.8% | 0.02 (-0.33…0.31) | 0.440 | 43% | 0.992 | 1.0 | 0.10% |
+| halloween_nov_apr_equity | calendar | 1926-10 | 96.2 | 8.3% | 11.8% | 0.48 | -58.8% | 0.03 (-0.14…0.17) | 0.410 | 39% | 1.000 | 1.0 | 0.04% |
+
+## Nach deutscher Steuer (Abgeltungsteuer, Teilfreistellung, Verkauf zum Schluss angenommen)
+
+| Lauf | CAGR vor Steuer | CAGR nach Steuer | Steuerlast p.a. | Sharpe nach Steuer | SPY CAGR nach Steuer | Überrendite nach Steuer |
+|---|---|---|---|---|---|---|
+| halloween_nov_apr_equity:dax | 9.3% | 7.9% | 1.40% | 0.41 | 9.5% | -1.5% |
+| halloween_nov_apr_equity | 8.3% | 7.1% | 1.18% | 0.38 | 9.6% | -2.5% |

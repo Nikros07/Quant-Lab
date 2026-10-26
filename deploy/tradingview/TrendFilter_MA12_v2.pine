@@ -1,0 +1,198 @@
+//@version=6
+// Quant-Lab: Trendfilter MA12, Version 2 (belegte Basis + schaltbare Zusätze)
+//
+// BASIS (Standard, alles Zusätzliche AUS) = Signal und Ordergröße wie Version 1.2:
+//   Am letzten Handelstag des Monats:
+//     Monatsschluss >= Mittel der letzten 12 Monatsschlüsse (inkl. des aktuellen)  -> long (97 % des Eigenkapitals)
+//     sonst                                                                         -> flat (Cash)
+//   Die Order wird zum Schluss des Monatsletzten ausgelöst und füllt zur Eröffnung des nächsten Handelstags.
+//
+// ZUSÄTZE (Standard AUS, im Lab-Test H11 vom 2026-10-23 NICHT belegt, sondern schlechter):
+//   - Volatilitäts-Skalierung mit Höchstgewicht bis 1,5 (Hebel in ruhigen Phasen):
+//       17-Märkte-Korb 1991-2022: CAGR 6,2 % statt 7,3 % ohne Skalierung, Sharpe 0,54 statt 0,63.
+//   - Trailing-Stop, nur aufwärts nachgezogen (sinkt nie), zwei Arten:
+//       Stufen (Standard beim Einschalten): Anfangs-Stop = Einstieg minus 1R (R = m * Vol / Wurzel(12) * Einstieg).
+//       Erreicht der höchste Schlusskurs Einstieg + k*R, rückt der Stop auf Einstieg + (k-1)*R:
+//       nach +1R Break-even, nach +2R +1R im Gewinn, nach +3R +2R usw.
+//       Chandelier: Stop = höchster Schlusskurs * (1 - m * Vol / Wurzel(12)), ebenfalls nur aufwärts.
+//     Lab-Test H13 (17-Märkte-Korb 1991-2022): Stufen CAGR 6,3 % statt 7,3 %, MaxDD -15,8 % statt -14,8 %, also schlechter.
+//     Auf dem S&P 500 allein 1928-2022 besser (MaxDD -43,7 % statt -52,1 %), seit 2000 aber wieder schlechter.
+//   - Risk-Reward-Gewinnziel 3:1:                                 CAGR 5,1 %, Sharpe 0,42, MaxDD -17,5 %.
+//   Zum Vergleich der ungehebelte Filter-Korb: CAGR 7,3 %, Sharpe 0,63, MaxDD -14,7 %; Buy&Hold-Korb 8,3 %, 0,49, -47,1 %.
+//   Der Lab-Test arbeitet mit Schlusskursen. Der Stop hier wird im Tagesverlauf (Intraday) ausgelöst,
+//   das kann anders ausfallen als im Lab. Stop und Gewinnziel nur auf dem TAGES-Chart sinnvoll.
+//
+// Nutzung: Tages-Chart (Zeitrahmen "1D") eines Index (z. B. SP:SPX) oder eines ETF. Monats-Chart geht auch (dann
+// werden Stop und Ziel nur monatlich geprüft). Nicht auf Minuten-Charts verwenden.
+// Hinweis: Der Strategy Tester verzinst Cash NICHT, kennt keine CFD-Finanzierung (Swap) und keine Steuern.
+// Die Volatilitäts-Anpassung der Positionsgröße ist eine Näherung an den Lab-Test (Anpassung nur bei > 15 % Abweichung).
+// Quellen: Faber 2007 (SSRN 962461); Neely/Rapach/Tu/Zhou 2014; Harvey et al. 2018 (Vol-Skalierung).
+// Keine Anlageberatung. Bei Fehlermeldung beim Kompilieren: Version 1.2 (TrendFilter_MA12.pine) bleibt als Rückfall.
+strategy("Quant-Lab Trendfilter MA12 v2", overlay = true, initial_capital = 10000,
+         default_qty_type = strategy.percent_of_equity, default_qty_value = 100,
+         commission_type = strategy.commission.percent, commission_value = 0.05,
+         margin_long = 50, pyramiding = 0, calc_on_every_tick = false, process_orders_on_close = false)
+
+gSig  = "Signal"
+gSize = "Ordergröße"
+gVol  = "Zusatz 1: Volatilitäts-Skalierung (Standard AUS)"
+gStop = "Zusatz 2: Trailing-Stop und Risk-Reward (Standard AUS)"
+gShow = "Anzeige"
+
+maLen    = input.int(12, "Monate für den Durchschnitt", minval = 2, maxval = 60, group = gSig)
+useChart = input.bool(true, "Signal aus dem Chart-Symbol (sonst Symbol unten)", group = gSig)
+altSym   = input.symbol("SP:SPX", "Alternatives Signal-Symbol (Preisindex)", group = gSig)
+
+qtyPct   = input.float(97.0, "Ordergröße in % des Eigenkapitals (Puffer gegen Kurslücken)", minval = 10.0, maxval = 100.0, group = gSize)
+fixedUsd = input.float(0.0, "Feste Ordergröße in Kontowährung (0 = Zinseszins, sonst z. B. 10000)", minval = 0.0, group = gSize)
+
+useVol    = input.bool(false, "Gewicht nach Volatilität (Ziel-Vol statt immer 100 %)", group = gVol)
+targetVol = input.float(15.0, "Ziel-Volatilität p. a. in %", minval = 5.0, maxval = 40.0, step = 1.0, group = gVol)
+maxLev    = input.float(1.0, "Höchstgewicht (1,0 = kein Hebel; 1,5 = Hebel bis 1,5x)", minval = 0.5, maxval = 1.5, step = 0.1, group = gVol)
+
+tmSteps   = "Stufen (Break-even nach +1R, dann je +1R nachziehen)"
+tmChand   = "Chandelier (folgt dem Höchstkurs, nur aufwärts)"
+useTrail  = input.bool(false, "Trailing-Stop einschalten", group = gStop)
+trailMode = input.string(tmSteps, "Trailing-Art", options = [tmSteps, tmChand], group = gStop)
+trailMult = input.float(2.0, "Stop-Abstand 1R: Vielfaches von Vol / Wurzel(12)", minval = 0.5, maxval = 6.0, step = 0.5, group = gStop)
+useRR     = input.bool(false, "Gewinnziel (Risk-Reward) einschalten", group = gStop)
+rrRatio   = input.float(3.0, "Gewinnziel: Vielfaches des Stop-Abstands (R:R)", minval = 1.0, maxval = 6.0, step = 0.5, group = gStop)
+
+showTable   = input.bool(true, "Infotabelle anzeigen", group = gShow)
+showRef     = input.bool(true, "Referenztabelle (letzte 6 Monatsenden)", group = gShow)
+cashRatePct = input.float(0.0, "Cash-Zins p. a. in % für die angepasste Kurve", group = gShow)
+
+sigSym = useChart ? syminfo.tickerid : altSym
+
+// Monatswerte des Signal-Symbols. Auf dem letzten Tagesbalken eines Monats liefert der Monats-Request
+// den abgeschlossenen Monat (kein Repainting, kein lookahead).
+[mClose, mMa] = request.security(sigSym, "M", [close, ta.sma(close, maLen)], lookahead = barmerge.lookahead_off)
+
+// Annualisierte Volatilität (EWMA der quadrierten Tagesrenditen, Halbwertszeit ca. 20 Tage), Tageswert des Signal-Symbols
+dVol = request.security(sigSym, "D", math.sqrt(ta.ema(math.pow(math.log(close / close[1]), 2), 57)) * math.sqrt(252.0), lookahead = barmerge.lookahead_off)
+
+// letzter Handelstag des Monats = Tagesbalken schließt zusammen mit dem Monatsbalken
+isMonthEnd = time_close == time_close("M")
+
+signalOn = not na(mClose) and not na(mMa) and mClose >= mMa
+
+// Zielgewicht: ohne Skalierung immer 1,0. Mit Skalierung Ziel-Vol / aktuelle Vol, begrenzt auf das Höchstgewicht.
+float wTarget = 1.0
+if useVol and not na(dVol) and dVol > 0
+    wTarget := math.min(maxLev, (targetVol / 100.0) / dVol)
+
+float baseValue = fixedUsd > 0 ? math.min(fixedUsd, strategy.equity * qtyPct / 100.0) : strategy.equity * qtyPct / 100.0
+float targetQty = baseValue * wTarget / close
+
+// Anfänglicher Risikoabstand (Bruchteil des Kurses) für das Gewinnziel, festgehalten beim Einstieg
+var float riskFrac = na
+
+if isMonthEnd
+    if signalOn and strategy.position_size == 0
+        strategy.entry("Long", strategy.long, qty = targetQty, comment = "MA12 long")
+        riskFrac := na(dVol) ? na : trailMult * dVol / math.sqrt(12.0)
+    else if signalOn and strategy.position_size > 0 and useVol
+        diffQty = targetQty - strategy.position_size
+        if math.abs(diffQty) > 0.15 * strategy.position_size
+            if diffQty > 0
+                strategy.order("Adjust", strategy.long, qty = diffQty, comment = "Gewicht rauf")
+            else
+                strategy.order("Adjust", strategy.short, qty = -diffQty, comment = "Gewicht runter")
+    else if not signalOn and strategy.position_size > 0
+        strategy.close_all(comment = "MA12 flat")
+    msg = signalOn ? "LONG (Cash -> Index)" : "FLAT (Index -> Cash)"
+    alert("Trendfilter MA" + str.tostring(maLen) + " " + syminfo.ticker + ": Monatssignal " + msg
+          + " | Schluss " + str.tostring(mClose, "#.##") + " vs MA " + str.tostring(mMa, "#.##")
+          + " | Zielgewicht " + str.tostring(signalOn ? wTarget * 100.0 : 0.0, "#") + " %",
+          alert.freq_once_per_bar_close)
+
+// Trailing-Stop und Gewinnziel (nur wenn eingeschaltet). Höchster Schlusskurs seit Einstieg als Bezug.
+var float hh = na
+var float stopLvl = na
+if strategy.position_size > 0
+    hh := na(hh) ? close : math.max(hh, close)
+else
+    hh := na
+    stopLvl := na
+
+float stopPx = na
+float tpPx   = na
+if useTrail and strategy.position_size > 0 and not na(hh)
+    float cand = na
+    if trailMode == tmChand
+        if not na(dVol)
+            cand := hh * (1.0 - trailMult * dVol / math.sqrt(12.0))
+    else if not na(riskFrac) and riskFrac > 0
+        float entryPx = strategy.position_avg_price
+        float rUnit = riskFrac * entryPx
+        float kStep = math.floor((hh - entryPx) / rUnit)
+        cand := kStep >= 1 ? entryPx + (kStep - 1) * rUnit : entryPx - rUnit
+    if not na(cand)
+        stopLvl := na(stopLvl) ? cand : math.max(stopLvl, cand)
+    stopPx := stopLvl
+if useRR and strategy.position_size > 0 and not na(riskFrac)
+    tpPx := strategy.position_avg_price * (1.0 + rrRatio * riskFrac)
+if strategy.position_size > 0 and (not na(stopPx) or not na(tpPx))
+    strategy.exit("SL/TP", stop = stopPx, limit = tpPx)
+
+plot(stopPx, "Trailing-Stop", color = color.red, style = plot.style_linebr)
+plot(tpPx, "Gewinnziel", color = color.teal, style = plot.style_linebr)
+
+// Referenzdaten für die Prüftabelle: je Monatsende ein Eintrag. Reine Anzeige, keine Orderwirkung.
+var array<float> refClose = array.new<float>()
+var array<float> refMa    = array.new<float>()
+var array<float> refOn    = array.new<float>()
+var array<string> refMon  = array.new<string>()
+
+if isMonthEnd
+    array.push(refClose, mClose)
+    array.push(refMa, mMa)
+    array.push(refOn, signalOn ? 1.0 : 0.0)
+    array.push(refMon, str.format_time(time, "yyyy-MM"))
+
+// Cash-Zins-Kurve (nur Anzeige). Cash wächst in Phasen ohne Position täglich mit cashRatePct p. a.
+// Gezählt werden Kalendertage (Wochenende = 3 Tage). Der Strategy Tester selbst verzinst Cash NICHT.
+var float cashFactor = 1.0
+if not na(time[1]) and strategy.position_size == 0
+    cashFactor := cashFactor * math.pow(1.0 + cashRatePct / 100.0, math.round((time - time[1]) / 86400000.0) / 365.0)
+adjEquity = strategy.equity * cashFactor
+plot(adjEquity, "Equity mit Cash-Zins (nur Datenfenster)", display = display.data_window)
+
+plot(mMa, "MA (Monatsmittel)", color = color.new(color.orange, 0), linewidth = 2)
+bgcolor(signalOn ? color.new(color.green, 92) : color.new(color.red, 92), title = "Signal")
+
+if showTable and barstate.islast
+    var table t = table.new(position.top_right, 2, 6, border_width = 1)
+    table.cell(t, 0, 0, "Signal", text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 0, signalOn ? "LONG" : "FLAT", text_color = color.white, bgcolor = signalOn ? color.green : color.red)
+    table.cell(t, 0, 1, "Schluss (Monat)", text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 1, str.tostring(mClose, "#.##"))
+    table.cell(t, 0, 2, "MA" + str.tostring(maLen), text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 2, str.tostring(mMa, "#.##"))
+    table.cell(t, 0, 3, "Abstand", text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 3, str.tostring((mClose / mMa - 1) * 100, "#.##") + " %")
+    table.cell(t, 0, 4, "Volatilität p. a.", text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 4, na(dVol) ? "-" : str.tostring(dVol * 100.0, "#.#") + " %")
+    table.cell(t, 0, 5, "Zielgewicht", text_color = color.white, bgcolor = color.gray)
+    table.cell(t, 1, 5, signalOn ? str.tostring(wTarget * 100.0, "#") + " %" : "0 % (Cash)")
+
+// Prüftabelle: letzte 6 abgeschlossene Monatsenden, neueste zuerst
+if showRef and barstate.islast
+    var table tRef = table.new(position.bottom_right, 4, 7, border_width = 1)
+    nRef = array.size(refMon)
+    table.cell(tRef, 0, 0, "Monat", text_color = color.white, bgcolor = color.gray)
+    table.cell(tRef, 1, 0, "Schluss", text_color = color.white, bgcolor = color.gray)
+    table.cell(tRef, 2, 0, "MA", text_color = color.white, bgcolor = color.gray)
+    table.cell(tRef, 3, 0, "Signal", text_color = color.white, bgcolor = color.gray)
+    for r = 1 to 6
+        idx = nRef - r
+        if idx >= 0
+            fClose = array.get(refClose, idx)
+            fMa    = array.get(refMa, idx)
+            sOn    = array.get(refOn, idx) == 1.0
+            table.cell(tRef, 0, r, array.get(refMon, idx), text_color = color.white, bgcolor = color.gray)
+            table.cell(tRef, 1, r, na(fClose) ? "-" : str.tostring(fClose, "#.##"))
+            table.cell(tRef, 2, r, na(fMa) ? "-" : str.tostring(fMa, "#.##"))
+            table.cell(tRef, 3, r, sOn ? "LONG" : "FLAT", text_color = color.white, bgcolor = sOn ? color.green : color.red)
+        else
+            table.cell(tRef, 0, r, "-", text_color = color.white, bgcolor = color.gray)
