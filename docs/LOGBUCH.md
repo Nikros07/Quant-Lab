@@ -2,6 +2,12 @@
 
 Chronologisch, neueste oben. Jeder Eintrag: was gemacht, was gemessen, was daraus folgt (auch Negatives).
 
+## 2026-10-26 — Prüfblock P1 (H14–H18) gelaufen: Verlustvorteil robust, aber der historische MaxDD ist optimistisch
+- Nach Nicks Freigabe (Stopp bei 60 % Limit) lief die Härtetests-Welle: je Test ein umsetzender Agent plus unabhängiger Opus-Gegenprüfer. Die Verifikations- und Recherche-Agenten (V1–V6, R1–R5) wurden vor dem Start durch den Limit-Stopp nicht mehr ausgeführt und bleiben offen.
+- **H14 Placebo bestanden** (UPI 1,081 gegen p95 0,961; MaxDD −14,75 % besser als alle 1000 Placebos, bestes −23,3 %). **H15 Bootstrap bestanden** (5. Perzentil der MaxDD-Differenz +7,80 Pp), Rendite-Intervall [−4,11; +2,28 Pp] schließt 0 ein, P(Rendite niedriger) 70 %. **H17 Marktauswahl bestanden** (100 % kleinerer MaxDD, 99,4 % höherer UPI; Rendite aber in 97 % der Teilmengen unter B&H). **H16 Timing-Luck groß** (MaxDD je Entscheidungstag −15,9 % bis −24,0 %, Median −20,7 %; die ganze Streuung hängt am Corona-Crash 2020; `tranche21` knapp besser als der Median). **H18 Kosten:** bis etwa 125 bp je Seite behält `base1x` den UPI-Vorsprung; als CFD mit Finanzierung zum vollen Nominalwert (US-RF + 2,5 %) und unverzinstem Cash bleiben nur 3,15 % CAGR bei −22 % MaxDD.
+- **Wichtigste Korrektur an der Erwartung:** Der historische MaxDD von −14,75 % ist Terminglück. Bootstrap-Median −20,9 % (5/95 %: −31,6 % / −15,1 %), Phasen-Median −20,7 %. Erwartet werden −20 bis −30 %. Die README-Aussagen in Quant-Lab und im Projects-Repo wurden entsprechend ergänzt.
+- Neue Skripte: `scripts/check_h14_placebo.py` bis `check_h18_costs.py` mit 53 Tests, Ergebnisse `results/H14_*.csv` bis `H18_*.csv`.
+
 ## 2026-10-24 — Prüfblock P1 (H14–H18) registriert, Agenten-Welle abgebrochen
 - "check alles": 1067 Tests grün, alle Pine-Dateien mechanisch geprüft (Version, Klammern, Einrückung, Tabellenindizes), EA im Projekt und im MT5-Ordner identisch, Zahlen in HYPOTHESEN gegen die Ergebnis-CSV abgeglichen (keine Abweichung), MT5-Demokonto ohne Positionen und Orders.
 - Härtetests H14–H18 (Placebo, Bootstrap, Timing-Luck, Marktauswahl, Kosten) vor dem Lauf in `docs/HYPOTHESEN.md` (Abschnitt Prüfblock P1) registriert. Die dafür gestartete Agenten-Welle (16 Agenten, Run wf_e299dead-ab0) wurde durch das Ende der Sitzung abgebrochen: **keine Ergebnisse, H14–H18 bleiben offen.** Neustart mit denselben Aufträgen möglich.

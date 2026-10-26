@@ -282,3 +282,20 @@ Im Korb verschlechtern beide den Verlust und die Rendite (Kriterien nicht erfül
 
 MT5-Strategietester (EA v2, US500 D1, 2012–2026, 10 000 USD): Basis 8 237,57 USD bei 26,95 % Equity-DD; Stufen-Stop 7 693,62 USD bei 21,63 % (14 Trades); Chandelier-Ratsche 8 192,83 USD bei 21,97 % (22 Trades); Vol ohne Hebel + Stufen-Stop 6 258,88 USD bei 22,94 % (30 Trades). Ein Markt, ein Pfad: kein Beleg.
 
+## Härtetests P1 (H14–H18, 2026-10-26): Verlustvorteil robust, MaxDD-Erwartung realistischer
+
+| Test | Ergebnis |
+|---|---|
+| H14 Placebo (1000 zufällige Zustandsfolgen, gleiche Marktzeit) | bestanden: UPI 1,081 gegen p95 0,961; MaxDD −14,75 % besser als alle 1000 Placebos (bestes −23,3 %) |
+| H15 Bootstrap (2000 Ziehungen, 60-Tage-Blöcke) | Verlustvorteil belegt (MaxDD +7,8 Pp besser, 5. Perzentil); Rendite −1,0 Pp [−4,1; +2,3], P(schlechter) 70 %, nicht belegt |
+| H16 Timing-Luck (21 Entscheidungstage) | Streuung groß: MaxDD −15,9 % bis −24,0 % (Median −20,7 %), hängt am Corona-Crash; `tranche21` 7,15 % / −20,4 % |
+| H17 Marktauswahl (Leave-one-out, 300 Teilmengen) | bestanden: MaxDD in 100 %, UPI in 99,4 % besser; Rendite in 97 % unter B&H (Median −0,8 Pp) |
+| H18 Kosten | Futures/ETF: Vorsprung hält bis ca. 125 bp je Seite. CFD mit Finanzierung des vollen Nominalwerts: nur 3,15 % CAGR, −22 % MaxDD, UPI unter B&H |
+
+**Was das für Nick heißt:**
+- Der Drawdown-Vorteil gegenüber Buy&Hold ist echt und hängt nicht an einzelnen Märkten oder am Zufall.
+- **Der historische größte Verlust von −14,7 % ist optimistisch.** Erwartet werden −20 bis −30 % (Bootstrap-Median −20,9 %, schlechtester 5-%-Fall −31,6 %). Das Ziel "höchstens ca. 20 % Verlust" ist damit nicht sicher einzuhalten.
+- Ein Renditenachteil von etwa 1 Pp ist möglich, ein Renditevorteil ist nicht belegt.
+- Tranchen (Entscheidung auf mehrere Tage verteilen) nehmen den Termin-Zufall heraus; im Test knapp besser als der Median.
+- Umsetzung per CFD ist teuer, weil der volle Nominalwert finanziert wird. Futures oder ETFs sind kostenseitig deutlich besser; bei CFDs Finanzierungsaufschlag und Dividendenausgleich des Anbieters prüfen.
+

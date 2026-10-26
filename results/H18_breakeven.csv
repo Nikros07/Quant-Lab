@@ -1,0 +1,9 @@
+Szenario,Variiert,Kriterium,Status,Wert,Einheit,Anmerkung
+A Lab,Kosten bp je Seite,CAGR = RF-Cash,ok,318.881989,bp je Seite,(Zusatz ggue. 10 bp: +308.88 bp)
+A Lab,Kosten bp je Seite,UPI = UPI B&H,ok,125.362396,bp je Seite,(Zusatz ggue. 10 bp: +115.36 bp)
+"B CFD (2,5 %, Cash 0)",Kosten bp je Seite,CAGR = RF-Cash,ok,64.861298,bp je Seite,(Zusatz ggue. 10 bp: +54.86 bp)
+"B CFD (2,5 %, Cash 0)",Kosten bp je Seite,UPI = UPI B&H,unter_lo,0.000000,bp je Seite,
+"B CFD (Cash 0, 10 bp)",Finanzierungsaufschlag % p. a.,CAGR = RF-Cash,ok,3.758698,% p. a.,(Aufschlag zusaetzlich zu US-RF auf den Nominalwert)
+"B CFD (Cash 0, 10 bp)",Finanzierungsaufschlag % p. a.,UPI = UPI B&H,unter_lo,0.000000,% p. a.,(Aufschlag zusaetzlich zu US-RF auf den Nominalwert)
+"B2 info (Cash rf, 10 bp)",Finanzierungsaufschlag % p. a.,CAGR = RF-Cash,ok,4.743805,% p. a.,(Aufschlag zusaetzlich zu US-RF auf den Nominalwert)
+"B2 info (Cash rf, 10 bp)",Finanzierungsaufschlag % p. a.,UPI = UPI B&H,ok,1.089020,% p. a.,(Aufschlag zusaetzlich zu US-RF auf den Nominalwert)
