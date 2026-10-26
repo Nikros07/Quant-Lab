@@ -1,6 +1,6 @@
 # Strategie: Monatlicher Trendfilter „Index oder Cash" (MA12)
 
-Stand 2026-10-13. Geprüft im Quant-Lab-Prüfstand, unabhängig auditiert (Look-ahead, Quellentreue, Handrechnung: bestanden).
+[Stand 2026-10-26: Aktuelle Empfehlung ist der 17-Märkte-Korb `base1x` (Abschnitte ab H6/H11); die Zahlen im Kopfteil gelten für den S&P-500-Einzelfilter auf SPY (mit Dividenden) und sind mit den Korb-Zahlen (Preisindizes ohne Dividenden, 7,3 %) nicht vergleichbar. Die Korb-Tests H5–H21 verwenden den Schlusskurs des Folgetags; Pine und EA handeln zur Eröffnung des Folgetags.] Stand 2026-10-13. Geprüft im Quant-Lab-Prüfstand, unabhängig auditiert (Look-ahead, Quellentreue, Handrechnung: bestanden).
 Code: `deploy/mt5/TrendFilter_MA12.mq5` (MetaTrader 5) und `deploy/tradingview/TrendFilter_MA12.pine` (TradingView).
 
 ## Die Regel (komplett)
@@ -191,7 +191,7 @@ Gleichgewichteter Korb aus den Monats-MA12-Sleeves von 17 Märkten (die 18 aus H
 
 - Ergebnis nach dem vorab festgelegten Kriterium: **nicht bestanden**. Der Sharpe-Vorsprung von +0,14 ist nicht statistisch belegt (90-%-Intervall −0,11 bis +0,39, p = 0,18); der maximale Verlust ist dagegen auf ein Drittel geschrumpft.
 - Ein erster Lauf hatte einen Konstruktionsfehler von mir (an Wochenenden stand der Korb zu 100 % in BTC); er ist im Register als Lauf 1 dokumentiert, maßgeblich ist der korrigierte Lauf 2.
-- Lesart für Nick: Wer „Geld sicher halten" ernst nimmt, fährt mit dem Korb besser als mit einem einzelnen Markt (halbe Volatilität, ein Drittel des Verlusts, ca. 1 Prozentpunkt weniger Rendite als Buy&Hold). Das ist ein Risikoschutz, kein bewiesener Renditevorteil. Umsetzung: in TradingView läuft das Skript je Markt einzeln; einen echten Korb in einem Skript gibt es (noch) nicht.
+- Lesart für Nick: Wer „Geld sicher halten" ernst nimmt, fährt mit dem Korb besser als mit einem einzelnen Markt (rund 40 % weniger Volatilität, historisch ein Drittel des Verlusts, nach P1 eher die Hälfte, ca. 1 Prozentpunkt weniger Rendite als Buy&Hold). Das ist ein Risikoschutz, kein bewiesener Renditevorteil. Umsetzung: in TradingView läuft das Skript je Markt einzeln; einen echten Korb in einem Skript gibt es (noch) nicht.
 
 ## TradingView-Fund 2026-10-21: Einstiege wurden bei Kurslücken abgelehnt (behoben in v1.2)
 
@@ -232,7 +232,7 @@ Recherche in 4 Themen (Rohdaten `research/github/ergebnis_rohdaten.json`); die m
 | + Trailing-Stop | 5,3 % | 0,44 | −17,3 % |
 | + Trailing-Stop und R:R 3:1 | 5,1 % | 0,42 | −17,5 % |
 
-**Ehrlich:** "Marktrendite" wird nicht erreicht (ca. 1 Pp. darunter), "halber Verlust" schon (ein Drittel). Hebel 1,5x und Stops sind nicht belegt und hier schlechter. Ein einzelner Markt (nur S&P 500) hält die 20 % nicht sicher: im MT5-Test auf US500 2012–2026 lag der Equity-Drawdown bei 27 % (Corona-Crash, der Monatsfilter reagiert erst am Monatsende). Die 20 % gelten für den Korb aus vielen Märkten.
+**Ehrlich:** "Marktrendite" wird nicht erreicht (ca. 1 Pp. darunter), "halber Verlust" historisch schon (ein Drittel; nach P1 eher die Hälfte). Hebel 1,5x und Stops sind nicht belegt und hier schlechter. Ein einzelner Markt (nur S&P 500) hält die 20 % nicht sicher: im MT5-Test auf US500 2012–2026 lag der Equity-Drawdown bei 27 % (Corona-Crash, der Monatsfilter reagiert erst am Monatsende). Auch für den Korb sind die 20 % nach P1 nicht sicher einzuhalten (Bootstrap-Median −20,9 %, 5-%-Fall −31,6 %).
 
 **Umsetzung:** TradingView `TrendFilter_MA12_v2.pine` (Strategie, ein Markt, Zusätze schaltbar und AUS) plus `TrendFilter_MA12_Dashboard.pine` (17 Märkte, Zielgewicht je Markt und Investitionsquote, Alarm am Monatsende). MT5: `TrendFilter_MA12_v2.mq5` (Basis identisch zu v1.10, Zusätze schaltbar). Für den Korb in MT5 den EA je Symbol mit `InpExposure = 1 / Anzahl Märkte` auf eigene Charts legen.
 
@@ -247,6 +247,8 @@ Recherche in 4 Themen (Rohdaten `research/github/ergebnis_rohdaten.json`); die m
 | Vol-Skalierung ohne Hebel (Höchstgewicht 1,0) | 6 883,51 | 24,61 % | 27 | gleicher Test, später nachgeholt |
 | Vol ohne Hebel + Trailing-Stop | 7 679,92 | 20,66 % | 28 | |
 | Vol ohne Hebel + Stop + R:R 3:1 | 7 704,39 | 20,62 % | 31 | |
+
+**ACHTUNG:** Alle Stop-Zeilen dieser Tabelle stammen aus dem MT5-Modell 2 (Nur Eröffnungspreise) und sind nicht belastbar (siehe Korrektur im Abschnitt zu H19–H21); gültig sind nur die Basiszeilen ohne Stop.
 
 Die Stop-Varianten sehen auf diesem einen Pfad (ein Markt, 14 Jahre, Stops im Tagesverlauf) besser aus. Das ist **kein** Beleg: Das vorab festgelegte Kriterium (17 Märkte, 30 Jahre) verfehlt der Stop; ein einzelner günstiger Pfad ändert das Ergebnis nicht. Modell 2 enthält keine CFD-Finanzierung (Swap), keine Steuern und keine echten Intraday-Kurse.
 
@@ -286,7 +288,7 @@ MT5-Strategietester (EA v2, US500 D1, 2012–2026, 10 000 USD): Basis 8 237,57 U
 
 | Test | Ergebnis |
 |---|---|
-| H14 Placebo (1000 zufällige Zustandsfolgen, gleiche Marktzeit) | bestanden: UPI 1,081 gegen p95 0,961; MaxDD −14,75 % besser als alle 1000 Placebos (bestes −23,3 %) |
+| H14 Placebo (1000 zufällige Zustandsfolgen, gleiche Marktzeit) | bestanden (UPI knapp; Placebo-Märkte unabhängig gezogen, was zugunsten der Strategie verzerrt; nur Markov-Kette erster Ordnung): UPI 1,081 gegen p95 0,961; MaxDD −14,75 % besser als alle 1000 Placebos (bestes −23,3 %) |
 | H15 Bootstrap (2000 Ziehungen, 60-Tage-Blöcke) | Verlustvorteil belegt (MaxDD +7,8 Pp besser, 5. Perzentil); Rendite −1,0 Pp [−4,1; +2,3], P(schlechter) 70 %, nicht belegt |
 | H16 Timing-Luck (21 Entscheidungstage) | Streuung groß: MaxDD −15,9 % bis −24,0 % (Median −20,7 %), hängt am Corona-Crash; `tranche21` 7,15 % / −20,4 % |
 | H17 Marktauswahl (Leave-one-out, 300 Teilmengen) | bestanden: MaxDD in 100 %, UPI in 99,4 % besser; Rendite in 97 % unter B&H (Median −0,8 Pp) |
@@ -294,10 +296,10 @@ MT5-Strategietester (EA v2, US500 D1, 2012–2026, 10 000 USD): Basis 8 237,57 U
 
 **Was das für Nick heißt:**
 - Der Drawdown-Vorteil gegenüber Buy&Hold ist echt und hängt nicht an einzelnen Märkten oder am Zufall.
-- **Der historische größte Verlust von −14,7 % ist optimistisch.** Erwartet werden −20 bis −30 % (Bootstrap-Median −20,9 %, schlechtester 5-%-Fall −31,6 %). Das Ziel "höchstens ca. 20 % Verlust" ist damit nicht sicher einzuhalten.
+- **Der historische größte Verlust von −14,7 % ist optimistisch.** Zur Einordnung (keine Garantie): Bootstrap-Median −20,9 %, schlechtester 5-%-Fall −31,6 %; gilt für 32 Jahre Laufzeit. Das Ziel "höchstens ca. 20 % Verlust" ist damit nicht sicher einzuhalten.
 - Ein Renditenachteil von etwa 1 Pp ist möglich, ein Renditevorteil ist nicht belegt.
 - Tranchen (Entscheidung auf mehrere Tage verteilen) nehmen den Termin-Zufall heraus; im Test knapp besser als der Median.
-- Umsetzung per CFD ist teuer, weil der volle Nominalwert finanziert wird. Futures oder ETFs sind kostenseitig deutlich besser; bei CFDs Finanzierungsaufschlag und Dividendenausgleich des Anbieters prüfen.
+- Umsetzung per CFD ist teuer, weil der volle Nominalwert finanziert wird. Futures und ETFs vermeiden nur die Nominalwert-Finanzierung (ihre Rollkosten, TER, Tracking und Spreads sind nicht gerechnet); bei CFDs Finanzierungsaufschlag und Dividendenausgleich des Anbieters prüfen.
 
 ## Struktur-Stops, Fair Value Gaps und Tranchen (H19–H21, 2026-10-26): kein Standard-Gewinn
 
@@ -324,5 +326,12 @@ Im MT5-EA v3 sind Struktur-Stop (`InpStopMode` 2), Swing-Low-Trail (3), FVG-Stop
 | Swing-Low-Trail | 1 811 | 24,6 % | 15 |
 | FVG-Trail | 2 356 | 20,6 % | 35 |
 
-Im Modell 2 sah derselbe FVG-Trail über 2012–2026 mit 13 355 USD bei 12,9 % Verlust wie ein Durchbruch aus; das war ein Artefakt des Testmodells (vermutete Ursache: Modell 2 prüft Kurse nur zur Eröffnung der Tageskerze, Stops greifen dort nicht wie im echten Tagesverlauf; die Ursache habe ich nicht einzeln nachgewiesen). Die früher berichteten MT5-Zahlen für den Stufen-Stop (Verlust 27,0 % → 21,6 %) stammen ebenfalls aus Modell 2 und sind **nicht** belastbar; in Modell 1 ist der Stufen-Stop schlechter als die Basis. Für Stop-Tests künftig Modell 1 (oder Echtticks) verwenden; ein 14-Jahres-Lauf in Modell 1 lief wegen des Minutendaten-Abgleichs in eine Zeitüberschreitung und wurde abgebrochen, daher nur 2021–2026.
+Im Modell 2 sah derselbe FVG-Trail über 2012–2026 mit 13 355 USD bei 12,9 % Verlust wie ein Durchbruch aus (im selben Fenster 2021–2026: Modell 2 Basis 5 469 USD / 21,5 % Verlust, FVG-Trail 4 356 USD / 12,8 %; Modell 1 Basis 5 210 USD / 21,2 %, FVG-Trail 2 356 USD / 20,6 %); das war ein Artefakt des Testmodells (vermutete Ursache: Modell 2 prüft Kurse nur zur Eröffnung der Tageskerze, Stops greifen dort nicht wie im echten Tagesverlauf; die Ursache habe ich nicht einzeln nachgewiesen). Die früher berichteten MT5-Zahlen für alle Stop-Varianten (Stufen, Chandelier, Trail, Struktur, FVG; Beispiel Stufen-Stop Verlust 27,0 % → 21,6 %) stammen ebenfalls aus Modell 2 und sind **nicht** belastbar; in Modell 1 ist der Stufen-Stop schlechter als die Basis. Für Stop-Tests künftig Modell 1 (oder Echtticks) verwenden; ein 14-Jahres-Lauf in Modell 1 lief wegen des Minutendaten-Abgleichs in eine Zeitüberschreitung und wurde abgebrochen, daher nur 2021–2026.
+
+## Verifikation V1–V6 (2026-10-26, nur lesend): was sie ändert
+
+- **Bestätigt:** base1x ist unabhängig replizierbar (CAGR 7,299 % gegen 7,301 %, MaxDD −14,755 % gegen −14,746 %); kein Blick in die Zukunft in den Sleeves (Mutationstests); Basislogik von EA und Pine konsistent zum Lab.
+- **Einschränkungen für die Aussage:** (a) Ohne Bitcoin (erst ab 2015 im Korb) sinkt die Rendite auf 6,40 % (UPI 0,94); (b) das Verwerfen von Tagen mit weniger als 8 offenen Märkten (BTC-Wochenenden) macht den historischen MaxDD etwa 1 Pp zu optimistisch (−15,8 % bei Einfaltung); beides Angaben des Prüfers V5, noch nicht von mir nachgerechnet; (c) alle Zahlen vor Steuern, Preisindizes ohne Dividenden, Lokalwährung, Cash zum US-Zins; (d) rund 137 Versuche auf denselben Daten, kein Deflated Sharpe für den Korb; (e) der S&P-Holdout wurde einmal geöffnet.
+- **EA v3:** Robustheitslücken gefunden (Zustand nach Neustart, Lot-Aufrundung auf das Broker-Minimum, Wiederholung pro Tick, Stop-Level); noch nicht behoben, bis dahin nur im Demokonto und mit festen Lots oder ausreichendem Kontostand betreiben. Die Modi 2–5 weichen von den Lab-Tests ab und bleiben AUS.
+- **Pine:** beim Lesen keine Kompilierfehler gefunden; echter Lauf im Pine Editor steht aus (zuerst das Dashboard).
 
