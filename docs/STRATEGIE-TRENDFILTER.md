@@ -299,3 +299,30 @@ MT5-Strategietester (EA v2, US500 D1, 2012–2026, 10 000 USD): Basis 8 237,57 U
 - Tranchen (Entscheidung auf mehrere Tage verteilen) nehmen den Termin-Zufall heraus; im Test knapp besser als der Median.
 - Umsetzung per CFD ist teuer, weil der volle Nominalwert finanziert wird. Futures oder ETFs sind kostenseitig deutlich besser; bei CFDs Finanzierungsaufschlag und Dividendenausgleich des Anbieters prüfen.
 
+## Struktur-Stops, Fair Value Gaps und Tranchen (H19–H21, 2026-10-26): kein Standard-Gewinn
+
+Auf Nicks Wunsch (Support/Resistance, Liquiditätszonen, Fair Value Gaps, Trailing-Stop, Fokus MT5) wurden vier Ideen vorab registriert und im 17-Märkte-Korb (1991–2022) geprüft:
+
+| Variante | CAGR | MaxDD | UPI | Urteil |
+|---|---|---|---|---|
+| Basis `base1x` | 7,30 % | −14,75 % | 1,081 | Referenz |
+| Struktur-Stop fest (Swing-Low, `sr_stop`) | 7,08 % | −15,31 % | 1,012 | nicht bestanden |
+| Swing-Low-Trail (`sr_trail`) | 5,25 % | −18,26 % | 0,662 | nicht bestanden |
+| FVG-Stop fest (`fvg_stop`) | 7,09 % | −15,43 % | 1,010 | nicht bestanden |
+| FVG-Trail (`fvg_trail`) | 3,63 % | −21,62 % | 0,431 | nicht bestanden |
+| 4 Tranchen (`tranche4`, H20) | 7,09 % | −19,83 % | 1,031 | nicht bestanden (UPI knapp unter Phasen-Median) |
+
+Im MT5-EA v3 sind Struktur-Stop (`InpStopMode` 2), Swing-Low-Trail (3), FVG-Stop (4) und FVG-Trail (5) als Schalter eingebaut (Standard 0 = identisch zu v2); Support-/Widerstandszonen und FVGs werden im Chart eingezeichnet.
+
+**Wichtige Korrektur zu früheren MT5-Aussagen:** Der MT5-Strategietester im Modell "Nur Eröffnungspreise" (Model 2) überschätzt Stop-Strategien. Im realistischeren Modell "1-Minuten-OHLC" (Model 1) auf US500, 2021-01 bis 2026-10, 10 000 USD:
+
+| Variante | Netto-Gewinn | Equity-DD | Trades |
+|---|---|---|---|
+| Basis | 5 210 | 21,2 % | 6 |
+| Stufen-Stop (v2) | 3 671 | 23,7 % | 8 |
+| Struktur-Stop fest / FVG-Stop fest | 5 210 | 21,2 % | 6 (nie ausgelöst) |
+| Swing-Low-Trail | 1 811 | 24,6 % | 15 |
+| FVG-Trail | 2 356 | 20,6 % | 35 |
+
+Im Modell 2 sah derselbe FVG-Trail über 2012–2026 mit 13 355 USD bei 12,9 % Verlust wie ein Durchbruch aus; das war ein Artefakt des Testmodells (vermutete Ursache: Modell 2 prüft Kurse nur zur Eröffnung der Tageskerze, Stops greifen dort nicht wie im echten Tagesverlauf; die Ursache habe ich nicht einzeln nachgewiesen). Die früher berichteten MT5-Zahlen für den Stufen-Stop (Verlust 27,0 % → 21,6 %) stammen ebenfalls aus Modell 2 und sind **nicht** belastbar; in Modell 1 ist der Stufen-Stop schlechter als die Basis. Für Stop-Tests künftig Modell 1 (oder Echtticks) verwenden; ein 14-Jahres-Lauf in Modell 1 lief wegen des Minutendaten-Abgleichs in eine Zeitüberschreitung und wurde abgebrochen, daher nur 2021–2026.
+
