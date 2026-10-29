@@ -45,7 +45,7 @@ Die Strategie hatte in 10 von 31 Jahren ein Minus (S&P 500 und MSCI World je 9),
 | `docs/` | Hypothesenregister, Logbuch ([`LOGBUCH.md`](docs/LOGBUCH.md)), Strategiebericht ([`STRATEGIE-TRENDFILTER.md`](docs/STRATEGIE-TRENDFILTER.md)), Audits |
 | `research/` | Literatur- und Repo-Recherche (Rohdaten) |
 | `results/` | Ergebnisdateien der Läufe |
-| `deploy/tradingview/` | Pine Script v6: Strategie (v1.2, v2), Plus, Alarm, 17-Märkte-Dashboard |
+| `deploy/tradingview/` | Pine Script v6: Strategie (v1.2, v2, v3 mit Zonen und Fair Value Gaps, nie kompiliert), Plus, Alarm, 17-Märkte-Dashboard |
 | `deploy/mt5/` | MQL5-Expert-Advisor (v1.10, v2, v3.10 mit Zonen-Zeichnung, schaltbaren Struktur-/FVG-Stops und Robustheits-Korrekturen aus dem Review) und Tester-Konfigurationen, nur Demokonto |
 | `deploy/alpaca-bot/` | geparkter Papierhandels-Bot (nicht in Betrieb) |
 

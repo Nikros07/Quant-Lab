@@ -1,0 +1,291 @@
+//@version=6
+// =============================================================================
+// TrendFilter MA12 v3 (Zonen + Fair Value Gaps) - Quant-Lab
+// KEINE Anlageberatung. Nur im Papierhandel / Demokonto ausprobieren.
+//
+// ACHTUNG: Dieser Code wurde noch nie in TradingView kompiliert oder getestet.
+// Bitte zuerst im Pine-Editor auf einem TAGES-Chart (1D) einfuegen, Fehlermeldungen pruefen
+// und die Wechsel gegen das Lab vergleichen (README, docs/STRATEGIE-TRENDFILTER.md).
+//
+// Regel (wie TrendFilter_MA12 v1.2/v2, Basis bei Stop-Modus "Aus" identisch):
+//   Am letzten Handelstag des Monats: Schlusskurs >= Mittel der letzten 12 Monatsschluesse -> long,
+//   sonst Cash. Ausfuehrung zur Eroeffnung des naechsten Handelstags (das Lab rechnet zum Schlusskurs).
+//
+// Neu in v3 (alles wie im MT5-EA v3.10, Standard AUS bzw. nur Anzeige):
+//   - Support-/Widerstandszonen aus Swing-Tiefs und -Hochs (Pivots), nur Anzeige
+//   - Fair Value Gaps (Drei-Kerzen-Ungleichgewicht, bullisch blau, baerisch orange), nur Anzeige
+//   - Stop-Modi: Swing-Low-Stop, Swing-Low-Trail, FVG-Stop, FVG-Trail
+//     Ergebnis im Lab (Hypothesen H19 und H21): KEIN Gewinn, alle Stop-Modi nicht bestanden.
+//     Sie stehen nur als Schalter bereit; empfohlen bleibt "Aus".
+//   Der Stop wird hier am SCHLUSSKURS geprueft (Ausstieg zur naechsten Eroeffnung), nicht intraday.
+// =============================================================================
+strategy("TrendFilter MA12 v3 (Zonen + FVG)", shorttitle = "TF-MA12 v3", overlay = true,
+     initial_capital = 10000, currency = currency.USD,
+     default_qty_type = strategy.percent_of_equity, default_qty_value = 97,
+     commission_type = strategy.commission.percent, commission_value = 0.1,
+     margin_long = 50, margin_short = 100, pyramiding = 1,
+     calc_on_every_tick = false, process_orders_on_close = false,
+     max_bars_back = 500, max_boxes_count = 300)
+
+// ---------------------------------------------------------------- Eingaben
+const string G_SIG = "Signal"
+const string G_STP = "Stop-Modus (Standard AUS: im Lab nicht bestanden)"
+const string G_ZON = "Zonen und Fair Value Gaps"
+
+const string SM0 = "Aus (Basis)"
+const string SM2 = "Swing-Low-Stop (fest)"
+const string SM3 = "Swing-Low-Trail"
+const string SM4 = "FVG-Stop (fest)"
+const string SM5 = "FVG-Trail"
+
+maMonths  = input.int(12, "MA-Laenge in Monaten", minval = 2, maxval = 60, group = G_SIG)
+tradingOn = input.bool(true, "Handel aktiv (aus = nur Signal und Zonen anzeigen)", group = G_SIG)
+
+stopMode  = input.string(SM0, "Stop-Modus", options = [SM0, SM2, SM3, SM4, SM5], group = G_STP,
+     tooltip = "Aus = Basisstrategie. Die Stops sind im Lab (H19, H21) durchgefallen und nur als Schalter vorhanden.")
+stopMult  = input.float(2.0, "Stop-Abstand R = m x Jahresvolatilitaet / Wurzel(12)", minval = 0.5, step = 0.5, group = G_STP,
+     tooltip = "Der Anfangs-Stop liegt zwischen 1R und 4R unter dem Einstieg; ohne Zone gilt 1R.")
+
+pivotK    = input.int(10, "Pivot: k Tage davor und danach", minval = 3, maxval = 30, group = G_ZON)
+zoneBuf   = input.float(0.5, "Puffer unter/ueber der Zone in ATR(14)", minval = 0.0, maxval = 3.0, step = 0.1, group = G_ZON)
+zoneBack  = input.int(120, "Rueckblick in Handelstagen", minval = 20, maxval = 500, group = G_ZON)
+fvgMin    = input.float(0.25, "FVG-Mindestgroesse in ATR(14)", minval = 0.0, maxval = 3.0, step = 0.05, group = G_ZON)
+showZones = input.bool(true, "Support/Resistance-Zonen zeichnen", group = G_ZON)
+showFvg   = input.bool(true, "Fair Value Gaps zeichnen", group = G_ZON)
+maxDraw   = input.int(4, "Max. gezeichnete Zonen je Art", minval = 1, maxval = 10, group = G_ZON)
+
+const string G_NEU = "Eigene Ideen (Standard aus)"
+maMix     = input.bool(false, "Mischung 6/9/12 Monate (ens3)", group = G_NEU,
+     tooltip = "Gewicht = Anteil der drei Signale (MA 6, 9, 12), die an sind (0, 1/3, 2/3, 1). Im Lab (H12) gleiche Rendite bei kleinerem Verlust, aber NICHT bestaetigt: Holdout nicht geoeffnet.")
+useBudget = input.bool(false, "Risikobudget: Positionsgroesse begrenzen", group = G_NEU,
+     tooltip = "Investiert nur so viel, dass der erwartete Hoechstverlust das Budget nicht uebersteigt. Reine Rechnung, aendert das Signal nicht.")
+budgetPct = input.float(15.0, "Max. tragbarer Verlust in % des Kontos", minval = 1.0, maxval = 50.0, step = 1.0, group = G_NEU)
+expLoss   = input.float(50.0, "Erwarteter Hoechstverlust in %", minval = 10.0, maxval = 90.0, step = 1.0, group = G_NEU,
+     tooltip = "Korb aus 17 Maerkten: etwa 32 (Bootstrap 5-%-Fall). Einzelner Markt wie der S&P 500: historisch 33 bis 52, daher 50 als Standard.")
+warnPct   = input.float(2.0, "Vorwarnung: Abstand zum Kippen in %", minval = 0.5, maxval = 10.0, step = 0.5, group = G_NEU,
+     tooltip = "Alarm in den letzten 7 Kalendertagen vor Monatsende, wenn Kurs und Durchschnitt so nah beieinander liegen.")
+
+// ---------------------------------------------------------------- Basisgroessen
+atr14  = ta.atr(14)
+dret   = nz(close / close[1] - 1.0)
+var float ewv = na
+ewv := na(ewv) ? dret * dret : 0.94 * ewv + 0.06 * dret * dret
+volAnn = math.sqrt(ewv * 252.0)
+
+[mClose, mMa, mMa6, mMa9] = request.security(syminfo.tickerid, "M", [close, ta.sma(close, maMonths), ta.sma(close, 6), ta.sma(close, 9)])
+isMonthEnd = time_close == time_close("M")
+bool on12  = not na(mMa) and mClose >= mMa
+float wSig = maMix ? ((mClose >= mMa6 ? 1.0 : 0.0) + (mClose >= mMa9 ? 1.0 : 0.0) + (on12 ? 1.0 : 0.0)) / 3.0 : (on12 ? 1.0 : 0.0)
+signalOn   = wSig > 0.0
+monthKey   = year * 100 + month
+
+// ---------------------------------------------------------------- Erkennung (jeden Balken)
+pl      = ta.pivotlow(low, pivotK, pivotK)
+ph      = ta.pivothigh(high, pivotK, pivotK)
+bullFvg = low > high[2] and (low - high[2]) >= fvgMin * atr14
+bearFvg = high < low[2] and (low[2] - high) >= fvgMin * atr14
+
+// ---------------------------------------------------------------- Zustand
+var array<float> plPx    = array.new<float>()
+var array<int>   plBar   = array.new<int>()
+var array<float> bullTop = array.new<float>()
+var array<float> bullBot = array.new<float>()
+var array<int>   bullBar = array.new<int>()
+var array<box>   bullBox = array.new<box>()
+var array<float> bearTop = array.new<float>()
+var array<float> bearBot = array.new<float>()
+var array<int>   bearBar = array.new<int>()
+var array<box>   bearBox = array.new<box>()
+var array<box>   supBox  = array.new<box>()
+var array<box>   resBox  = array.new<box>()
+var float entryPx  = na
+var float stopLvl  = na
+var int   prevState = -1
+
+// ---------------------------------------------------------------- 1) Anfangs-Stop am Einstiegsbalken
+// Es werden nur Daten bis zum Vortag benutzt (Arrays sind noch nicht um diesen Balken ergaenzt).
+bool justEntered = strategy.position_size > 0 and strategy.position_size[1] <= 0
+if justEntered
+    entryPx := strategy.position_avg_price
+    stopLvl := na
+    if stopMode != SM0
+        float rUnit = stopMult * nz(volAnn[1]) / math.sqrt(12.0) * entryPx
+        float atrP  = nz(atr14[1])
+        float raw   = na
+        if stopMode == SM2 or stopMode == SM3
+            int nPl = array.size(plPx)
+            if nPl > 0
+                for i = nPl - 1 to 0
+                    float lvl = array.get(plPx, i)
+                    if bar_index - array.get(plBar, i) <= zoneBack and lvl < entryPx
+                        raw := lvl - zoneBuf * atrP
+                        break
+        else
+            int nBu = array.size(bullBot)
+            float bestBot = na
+            if nBu > 0
+                for i = 0 to nBu - 1
+                    if array.get(bullTop, i) < entryPx and bar_index - array.get(bullBar, i) <= zoneBack
+                        float bt = array.get(bullBot, i)
+                        if na(bestBot) or bt > bestBot
+                            bestBot := bt
+            if not na(bestBot)
+                raw := bestBot - zoneBuf * atrP
+        if rUnit > 0
+            float dist = na(raw) ? rUnit : math.max(rUnit, math.min(4.0 * rUnit, entryPx - raw))
+            stopLvl := entryPx - dist
+
+if strategy.position_size <= 0
+    stopLvl := na
+
+// ---------------------------------------------------------------- 2) Zonen und FVGs fuehren
+// Swing-Tiefs und -Hochs (bestaetigt erst k Tage spaeter, kein Blick in die Zukunft)
+if not na(pl)
+    array.push(plPx, pl)
+    array.push(plBar, bar_index - pivotK)
+    if array.size(plPx) > 60
+        array.shift(plPx)
+        array.shift(plBar)
+    if showZones
+        array.push(supBox, box.new(left = bar_index - pivotK, top = pl, right = bar_index, bottom = pl - zoneBuf * atr14,
+             extend = extend.right, border_color = color.new(color.green, 30), bgcolor = color.new(color.green, 85)))
+        if array.size(supBox) > maxDraw
+            box.delete(array.shift(supBox))
+    if strategy.position_size > 0 and stopMode == SM3 and not na(stopLvl)
+        float candS = pl - zoneBuf * atr14
+        if candS > stopLvl
+            stopLvl := candS
+
+if not na(ph) and showZones
+    array.push(resBox, box.new(left = bar_index - pivotK, top = ph + zoneBuf * atr14, right = bar_index, bottom = ph,
+         extend = extend.right, border_color = color.new(color.red, 30), bgcolor = color.new(color.red, 85)))
+    if array.size(resBox) > maxDraw
+        box.delete(array.shift(resBox))
+
+// bullische FVG: Zone von High[2] bis Low
+if bullFvg
+    array.push(bullTop, low)
+    array.push(bullBot, high[2])
+    array.push(bullBar, bar_index)
+    box bxu = na
+    if showFvg
+        bxu := box.new(left = bar_index - 2, top = low, right = bar_index, bottom = high[2], extend = extend.right,
+             border_color = color.new(color.blue, 30), bgcolor = color.new(color.blue, 85))
+    array.push(bullBox, bxu)
+    int cu = array.size(bullBox)
+    if cu > maxDraw
+        box oldU = array.get(bullBox, cu - maxDraw - 1)
+        if not na(oldU)
+            box.delete(oldU)
+        array.set(bullBox, cu - maxDraw - 1, na)
+    if strategy.position_size > 0 and stopMode == SM5 and not na(stopLvl)
+        float candF = high[2] - zoneBuf * atr14
+        if candF > stopLvl
+            stopLvl := candF
+
+// baerische FVG: Zone von High bis Low[2] (nur Anzeige)
+if bearFvg
+    array.push(bearTop, low[2])
+    array.push(bearBot, high)
+    array.push(bearBar, bar_index)
+    box bxd = na
+    if showFvg
+        bxd := box.new(left = bar_index - 2, top = low[2], right = bar_index, bottom = high, extend = extend.right,
+             border_color = color.new(color.orange, 30), bgcolor = color.new(color.orange, 85))
+    array.push(bearBox, bxd)
+    int cd = array.size(bearBox)
+    if cd > maxDraw
+        box oldD = array.get(bearBox, cd - maxDraw - 1)
+        if not na(oldD)
+            box.delete(oldD)
+        array.set(bearBox, cd - maxDraw - 1, na)
+
+// Mitigation: bullische FVG ist ungueltig, sobald ein Schlusskurs unter ihrem unteren Rand liegt (oder zu alt)
+if array.size(bullBot) > 0
+    for i = array.size(bullBot) - 1 to 0
+        if close < array.get(bullBot, i) or bar_index - array.get(bullBar, i) > zoneBack
+            box bu = array.get(bullBox, i)
+            if not na(bu)
+                box.delete(bu)
+            array.remove(bullTop, i)
+            array.remove(bullBot, i)
+            array.remove(bullBar, i)
+            array.remove(bullBox, i)
+if array.size(bearTop) > 0
+    for i = array.size(bearTop) - 1 to 0
+        if close > array.get(bearTop, i) or bar_index - array.get(bearBar, i) > zoneBack
+            box bd = array.get(bearBox, i)
+            if not na(bd)
+                box.delete(bd)
+            array.remove(bearTop, i)
+            array.remove(bearBot, i)
+            array.remove(bearBar, i)
+            array.remove(bearBox, i)
+
+// ---------------------------------------------------------------- 3) Stop pruefen (Schlusskurs, Ausstieg zur naechsten Eroeffnung)
+bool stopNow = false
+if tradingOn and stopMode != SM0 and strategy.position_size > 0 and not na(stopLvl) and close < stopLvl
+    stopNow := true
+    strategy.close_all(comment = "Stop")
+
+// ---------------------------------------------------------------- 4) Monatsentscheidung
+// Wurde der Stop am Monatsende-Balken ausgeloest, wird die Monatsentscheidung uebersprungen (wie im Lab).
+// Ohne eigene Ideen (Standard) laeuft exakt der alte Pfad mit 97 % des Kapitals. Mit Mischung oder Risikobudget
+// wird die Stueckzahl selbst berechnet und monatlich bei mehr als 15 % Abweichung angepasst.
+float quota   = useBudget ? math.min(0.97, budgetPct / expLoss) : 0.97
+bool customQty = maMix or useBudget
+float distLive = na(mMa) ? na : (mClose / mMa - 1.0) * 100.0
+float daysLeft = (time_close("M") - time_close) / 86400000.0
+
+if tradingOn and isMonthEnd and not stopNow
+    if wSig == 0.0
+        if strategy.position_size > 0
+            strategy.close_all(comment = "MA12 aus")
+    else if not customQty
+        if strategy.position_size == 0
+            strategy.entry("Long", strategy.long, comment = "MA12 an")
+    else
+        float qT = wSig * quota * strategy.equity / close
+        if strategy.position_size == 0
+            strategy.entry("Long", strategy.long, qty = qT, comment = "MA12 an")
+        else if math.abs(qT - strategy.position_size) > 0.15 * strategy.position_size
+            strategy.order("Adj", qT > strategy.position_size ? strategy.long : strategy.short, qty = math.abs(qT - strategy.position_size), comment = "Anpassung")
+
+if barstate.islast and not na(distLive) and math.abs(distLive) <= warnPct and daysLeft <= 7.0
+    alert("TrendFilter MA12: Signal nahe am Kippen (" + str.tostring(distLive, "#.##") + " % Abstand) " + syminfo.tickerid, alert.freq_once_per_bar)
+
+if isMonthEnd
+    int st = math.round(wSig * 3.0)
+    if prevState >= 0 and prevState != st
+        alert("TrendFilter MA12: " + (signalOn ? "LONG" : "FLAT") + " " + syminfo.tickerid, alert.freq_once_per_bar_close)
+    prevState := st
+
+// ---------------------------------------------------------------- Anzeige
+plot(mMa, "MA12 (Monatsschluesse)", color = color.orange, linewidth = 2)
+plot(strategy.position_size > 0 ? stopLvl : na, "Stop", color = color.red, style = plot.style_linebr, linewidth = 1)
+bgcolor(signalOn ? color.new(color.green, 94) : color.new(color.red, 94))
+
+var table tbl = table.new(position.top_right, 2, 11, bgcolor = color.new(color.black, 75), border_width = 1)
+if barstate.islast
+    table.cell(tbl, 0, 0, "Signal", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 0, signalOn ? "LONG" : "FLAT", text_color = signalOn ? color.lime : color.red, text_size = size.small)
+    table.cell(tbl, 0, 1, "Monatsschluss", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 1, na(mClose) ? "-" : str.tostring(mClose, "#.##"), text_color = color.white, text_size = size.small)
+    table.cell(tbl, 0, 2, "MA " + str.tostring(maMonths), text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 2, na(mMa) ? "-" : str.tostring(mMa, "#.##"), text_color = color.white, text_size = size.small)
+    table.cell(tbl, 0, 3, "Position", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 3, strategy.position_size > 0 ? "long" : "keine", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 0, 4, "Stop-Modus", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 4, stopMode, text_color = color.white, text_size = size.small)
+    table.cell(tbl, 0, 5, "Stop-Niveau", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 5, na(stopLvl) ? "-" : str.tostring(stopLvl, "#.##"), text_color = color.white, text_size = size.small)
+    table.cell(tbl, 0, 6, "Aktive FVG", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 6, str.tostring(array.size(bullBot)) + " bull / " + str.tostring(array.size(bearTop)) + " bear", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 0, 7, "Chart", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 7, timeframe.isdaily ? "1D ok" : "Bitte 1D waehlen", text_color = timeframe.isdaily ? color.white : color.yellow, text_size = size.small)
+    table.cell(tbl, 0, 8, "Ziel-Gewicht", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 8, str.tostring(wSig * 100.0, "#") + " %", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 0, 9, "Investiert bis", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 9, str.tostring(quota * 100.0, "#") + " % des Kontos", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 0, 10, "Abstand zum Kippen", text_color = color.white, text_size = size.small)
+    table.cell(tbl, 1, 10, na(distLive) ? "-" : str.tostring(distLive, "#.##") + " %", text_color = (not na(distLive) and math.abs(distLive) <= warnPct) ? color.yellow : color.white, text_size = size.small)
