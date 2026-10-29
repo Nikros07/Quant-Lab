@@ -1,0 +1,40 @@
+H20 Tranche4: 16 Maerkte, Phasen (0, 5, 10, 15) je 1/4 (Entscheidung alle 21 Handelstage), Auswertung bis 2022-12-31, 10 bp je Wechsel, Ausfuehrung Schluss Folgetag, Cash = US-RF, ohne Steuer
+
+Maerkte mit Daten: 16 von 16; uebersprungen: keine
+
+Gemeinsamer Index: 1991-03-05 bis 2022-12-30, 8039 Handelstage
+
+(1) Kennzahlen (gemeinsamer Index):
+                 base1x  tranche4 tranche21
+CAGR             6.38 %    6.18 %    6.24 %
+Vol              7.96 %    7.92 %    7.92 %
+Sharpe             0.53      0.51      0.52
+MaxDD          -14.75 %  -20.03 %  -20.43 %
+Ulcer            6.79 %    7.01 %    6.93 %
+UPI                0.94      0.88      0.90
+Zeit DD<-10%    20.09 %   21.83 %   20.36 %
+36M>0           92.71 %   91.91 %   92.15 %
+schl. 3J-CAGR   -3.72 %   -3.93 %   -3.92 %
+pos. Jahre      68.75 %   68.75 %   68.75 %
+schl. Jahr     -11.16 %   -9.37 %   -9.34 %
+
+(2) Median der 21 Einzelphasen: MaxDD -21.13 %, UPI 0.882
+    Spannweite der 21 Phasen (max - min): CAGR 0.95 Pp, MaxDD 7.37 Pp, UPI 0.298
+    tranche4 MaxDD -20.03 %, UPI 0.882, CAGR 6.18 %; base1x CAGR 6.38 %
+
+(3) Kriterium H20:
+  (a) MaxDD tranche4 -20.03 % besser als Median -21.13 %: ERFÜLLT
+  (b) UPI tranche4 0.882 nicht niedriger als Median 0.882: NICHT erfüllt
+  (c) CAGR tranche4 6.18 % vs base1x 6.38 % (Abstand -0.19 Pp, Grenze -0,70 Pp): ERFÜLLT
+  Gesamturteil H20: NICHT erfüllt
+
+(4) Halbzeiten (informativ):
+  1991-2006 base1x     CAGR 9.84 %, MaxDD -14.75 %, UPI 1.550
+  1991-2006 tranche4   CAGR 9.84 %, MaxDD -13.43 %, UPI 1.547
+  1991-2006 tranche21  CAGR 9.91 %, MaxDD -13.50 %, UPI 1.596
+  2007-2022 base1x     CAGR 3.06 %, MaxDD -14.38 %, UPI 0.426
+  2007-2022 tranche4   CAGR 2.69 %, MaxDD -20.03 %, UPI 0.355
+  2007-2022 tranche21  CAGR 2.74 %, MaxDD -20.43 %, UPI 0.362
+
+CSV gespeichert: C:\Users\spide\Desktop\Projekte\Quant-Lab\results\P4_H20_tranche4.csv
+CSV gespeichert: C:\Users\spide\Desktop\Projekte\Quant-Lab\results\P4_H20_basket_returns.csv

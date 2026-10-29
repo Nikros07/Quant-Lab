@@ -54,8 +54,28 @@
 //|    (orange) aktive FVGs im Chart, nur Anzeige.                   |
 //|  Protokolldatei TrendFilter_MA12_v3_log.csv                       |
 //+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+//| Änderungen v3.10 (Handelslogik, Signal und Sizing bei normalem   |
+//| Kontostand UNVERÄNDERT; Robustheit nach Review V3, 2026-10-26):   |
+//|  - Zustand nach EA-Neustart: Position, Stop, Einstieg, Höchstkurs |
+//|    und Sperre nach Stop im Monat werden aus Position/Historie     |
+//|    wiederhergestellt (RestoreState)                               |
+//|  - Lotgröße: kein stilles Aufrunden auf das Broker-Minimum mehr,  |
+//|    wenn das Soll um mehr als 25 % überschritten würde (kein Kauf, |
+//|    Hinweis im Journal); Rundung mit Epsilon                       |
+//|  - Fehlgeschlagene Orders: Wiederholung frühestens nach 5 Minuten,|
+//|    höchstens 12 Versuche je Tagesbalken (kein Order-Spam)         |
+//|  - SL/TP: keine Änderungsanfrage bei unverändertem Wert, Prüfung  |
+//|    gegen das Stop-Level des Brokers                               |
+//|  - Einstiegskurs: Rückfall auf POSITION_PRICE_OPEN, wenn           |
+//|    ResultPrice() leer ist                                         |
+//|  Bekannt, nicht geändert: InpUseVol nur auf Netting-Konten oder   |
+//|  mit einer Position sinnvoll (Hedging: mehrere Tickets); Modi 2-5 |
+//|  weichen von den Lab-Tests H19-H21 ab (Tiefs statt Schlusskurse,  |
+//|  Pivot einen Tag später, ATR als True Range) und bleiben AUS.     |
+//+------------------------------------------------------------------+
 #property copyright "Quant-Lab"
-#property version   "3.00"
+#property version   "3.10"
 #property description "Monatlicher 12-Monats-Trendfilter: Index long oder flat (v3 mit optionalen Stops und Zonen)."
 
 #include <Trade\Trade.mqh>
@@ -94,6 +114,13 @@ double   g_stopLvl = 0.0;                // aktuelles Stop-Niveau (sinkt nie, 0 
 bool     g_wasLong = false;              // EA hielt gestern eine Position (Stop-Erkennung)
 int      g_blockKey = 0;                 // Monat (YYYYMM), in dem nach Stop/Ziel kein Wiedereinstieg erlaubt ist
 int      g_rebalKey = 0;                 // Monat der letzten Gewichtsanpassung
+const int RETRY_SECONDS = 300;           // v3.10: Wiederholversuch frühestens nach 5 Minuten
+const int RETRY_MAX     = 12;            // v3.10: höchstens 12 Versuche je Tagesbalken
+datetime g_retryAt    = 0;               // frühester Zeitpunkt des nächsten Versuchs (0 = kein Wiederholungsstatus)
+datetime g_retryBar   = 0;               // Tagesbalken, für den Versuche gezählt werden
+int      g_retryCount = 0;
+
+void RestoreState();                     // Prototyp (Definition unten)
 
 //+------------------------------------------------------------------+
 int OnInit()
@@ -138,10 +165,11 @@ int OnInit()
    g_trade.SetExpertMagicNumber(InpMagic);
    g_trade.SetDeviationInPoints(InpSlippage);
    g_trade.SetAsyncMode(false);
-   PrintFormat("TrendFilter_MA12 v3 gestartet: %s, MA=%d Monate, Exposure=%.2f, Handel=%s | Vol=%s Trail=%s RR=%s Stop=%d PivotK=%d Buf=%.2f LB=%d",
+   PrintFormat("TrendFilter_MA12 v3.10 gestartet: %s, MA=%d Monate, Exposure=%.2f, Handel=%s | Vol=%s Trail=%s RR=%s Stop=%d PivotK=%d Buf=%.2f LB=%d",
                g_sym, InpMaMonths, InpExposure, InpTradingOn ? "AN" : "AUS (nur Signal)",
                InpUseVol ? "AN" : "aus", InpUseTrail ? "AN" : "aus", InpUseRR ? "AN" : "aus",
                InpStopMode, InpPivotK, InpZoneBuf, InpZoneLookback);
+   RestoreState();
    return INIT_SUCCEEDED;
   }
 
@@ -257,7 +285,7 @@ bool IsPivotHigh(const double &high[], int s, int k)
 
 //+------------------------------------------------------------------+
 //| Juengstes bestaetigtes Pivot-Tief unter 'price' innerhalb der    |
-//| letzten 'lookback' Tage. Index 1 der Daten = letzter Abschluss.  |
+//| letzten 'lookback' Tage. Index 0 der Daten = letzter Abschluss.  |
 //| false, wenn keins gefunden.                                      |
 //+------------------------------------------------------------------+
 bool NewestPivotBelow(const double price, const int lookback, const int k, double &level)
@@ -576,6 +604,16 @@ void ApplySlTp(const double sl, const double tp)
          continue;
       double nsl = (sl > 0.0) ? NormalizeDouble(sl, digits) : 0.0;
       double ntp = (tp > 0.0) ? NormalizeDouble(tp, digits) : 0.0;
+      double point = SymbolInfoDouble(g_sym, SYMBOL_POINT);
+      if(point > 0.0 && MathAbs(PositionGetDouble(POSITION_SL) - nsl) < 0.5 * point &&
+         MathAbs(PositionGetDouble(POSITION_TP) - ntp) < 0.5 * point)
+         continue;                                // v3.10: unverändert, keine Änderungsanfrage
+      double minDist = (double)SymbolInfoInteger(g_sym, SYMBOL_TRADE_STOPS_LEVEL) * point;
+      if(nsl > 0.0 && nsl > SymbolInfoDouble(g_sym, SYMBOL_BID) - minDist)
+        {
+         PrintFormat("SL %.2f liegt innerhalb des Stop-Levels (%.2f unter Bid nötig) - nicht gesetzt", nsl, minDist);
+         continue;
+        }
       if(!g_trade.PositionModify(t, nsl, ntp))
          PrintFormat("SL/TP setzen fehlgeschlagen: %d %s", g_trade.ResultRetcode(), g_trade.ResultRetcodeDescription());
      }
@@ -604,6 +642,63 @@ bool FindPosition(ulong &ticket, double &volume)
   }
 
 //+------------------------------------------------------------------+
+//| v3.10: Zustand nach EA-Neustart aus Position bzw. Historie        |
+//| wiederherstellen (Stop, Einstieg, Höchstkurs, Monatssperre).      |
+//+------------------------------------------------------------------+
+void RestoreState()
+  {
+   ulong  tk;
+   double vv;
+   if(FindPosition(tk, vv))
+     {
+      if(!PositionSelectByTicket(tk))
+         return;
+      g_wasLong    = true;
+      g_entryPrice = PositionGetDouble(POSITION_PRICE_OPEN);
+      double psl   = PositionGetDouble(POSITION_SL);
+      g_stopLvl    = (psl > 0.0) ? psl : 0.0;
+      g_hh         = g_entryPrice;
+      datetime t0  = (datetime)PositionGetInteger(POSITION_TIME);
+      double cl[];
+      int n = CopyClose(g_sym, PERIOD_D1, t0, TimeCurrent(), cl);   // aufsteigend, letztes Element = laufender Tag
+      for(int i = 0; i < n - 1; i++)
+         if(cl[i] > g_hh)
+            g_hh = cl[i];
+      double dv = EwmaVol();
+      g_riskFrac = (dv > 0.0) ? InpTrailMult * dv / MathSqrt(12.0) : 0.0;
+      g_rebalKey = MonthKey(TimeCurrent());
+      PrintFormat("Zustand wiederhergestellt: Position seit %s, Einstieg %.2f, Stop %.2f, Höchstkurs %.2f",
+                  TimeToString(t0), g_entryPrice, g_stopLvl, g_hh);
+      return;
+     }
+   // keine Position: im laufenden Monat per Stop/Ziel beendet? Dann bleibt die Wiedereinstiegs-Sperre erhalten
+   datetime now = TimeCurrent();
+   MqlDateTime dt;
+   TimeToStruct(now, dt);
+   dt.day = 1;
+   dt.hour = 0;
+   dt.min = 0;
+   dt.sec = 0;
+   if(!HistorySelect(StructToTime(dt), now))
+      return;
+   for(int i = HistoryDealsTotal() - 1; i >= 0; i--)
+     {
+      ulong d = HistoryDealGetTicket(i);
+      if(d == 0 || HistoryDealGetString(d, DEAL_SYMBOL) != g_sym || HistoryDealGetInteger(d, DEAL_MAGIC) != InpMagic)
+         continue;
+      if(HistoryDealGetInteger(d, DEAL_ENTRY) != DEAL_ENTRY_OUT)
+         continue;
+      long reason = HistoryDealGetInteger(d, DEAL_REASON);
+      if(reason == DEAL_REASON_SL || reason == DEAL_REASON_TP)
+        {
+         g_blockKey = MonthKey((datetime)HistoryDealGetInteger(d, DEAL_TIME));
+         PrintFormat("Zustand wiederhergestellt: Position im Monat %d per Stop/Ziel beendet, kein Wiedereinstieg bis zum nächsten Monat", g_blockKey);
+        }
+      return;                                      // nur der jüngste Ausstieg zählt
+     }
+  }
+
+//+------------------------------------------------------------------+
 //| Lotgröße so, dass Nominalwert ~ Exposure * Kontostand            |
 //+------------------------------------------------------------------+
 double CalcLots(const double weight)
@@ -612,6 +707,7 @@ double CalcLots(const double weight)
    double vmax  = SymbolInfoDouble(g_sym, SYMBOL_VOLUME_MAX);
    double vstep = SymbolInfoDouble(g_sym, SYMBOL_VOLUME_STEP);
    double lots;
+   double targetNominal = 0.0, notionalPerLot = 0.0;
    if(InpFixedLots > 0.0)
       lots = InpFixedLots;
    else
@@ -621,11 +717,18 @@ double CalcLots(const double weight)
       double ts    = SymbolInfoDouble(g_sym, SYMBOL_TRADE_TICK_SIZE);
       if(price <= 0.0 || tv <= 0.0 || ts <= 0.0)
          return 0.0;
-      double notional_per_lot = price * (tv / ts);              // in Kontowährung
-      lots = AccountInfoDouble(ACCOUNT_EQUITY) * InpExposure * weight / notional_per_lot;
+      notionalPerLot = price * (tv / ts);                       // in Kontowährung
+      targetNominal  = AccountInfoDouble(ACCOUNT_EQUITY) * InpExposure * weight;
+      lots = targetNominal / notionalPerLot;
      }
    if(vstep > 0.0)
-      lots = MathFloor(lots / vstep) * vstep;
+      lots = MathFloor(lots / vstep + 1e-9) * vstep;
+   if(InpFixedLots <= 0.0 && lots < vmin && vmin * notionalPerLot > 1.25 * targetNominal)
+     {
+      PrintFormat("Konto zu klein: Mindestlot %.2f ergäbe %.0f %% des Zielwerts (Nominal %.0f) - kein Kauf",
+                  vmin, 100.0 * vmin * notionalPerLot / MathMax(targetNominal, 1e-9), targetNominal);
+      return 0.0;                                   // v3.10: kein versteckter Hebel bei kleinem Konto
+     }
    lots = MathMax(vmin, MathMin(vmax, lots));
    return NormalizeDouble(lots, 2);
   }
@@ -668,12 +771,36 @@ void LogDecision(const double last_close, const double ma, const int sig, const 
   }
 
 //+------------------------------------------------------------------+
+//| v3.10: Wiederholversuch planen (gedrosselt statt bei jedem Tick). |
+//+------------------------------------------------------------------+
+void ScheduleRetry(const datetime bar)
+  {
+   if(bar == g_retryBar)
+      g_retryCount++;
+   else
+     {
+      g_retryBar = bar;
+      g_retryCount = 1;
+     }
+   if(g_retryCount > RETRY_MAX)
+     {
+      PrintFormat("Wiederholversuche für Tagesbalken %s aufgebraucht - bis zum nächsten Tag keine weiteren Versuche", TimeToString(bar));
+      return;                                      // g_lastBar bleibt = bar: kein weiterer Durchlauf an diesem Tag
+     }
+   g_lastBar = 0;
+   g_retryAt = TimeCurrent() + RETRY_SECONDS;
+  }
+
+//+------------------------------------------------------------------+
 void OnTick()
   {
    // höchstens einmal pro neuem Tagesbalken prüfen; das Signal ändert sich nur an Monatsgrenzen
    datetime bar = iTime(g_sym, PERIOD_D1, 0);
    if(bar == 0 || bar == g_lastBar)
       return;
+   if(g_retryAt > 0 && TimeCurrent() < g_retryAt)
+      return;                                       // v3.10: Wiederholversuch noch gedrosselt
+   g_retryAt = 0;
    g_lastBar = bar;
    int key = MonthKey(bar);
 
@@ -681,7 +808,7 @@ void OnTick()
    int sig = ComputeSignal(last_close, ma);
    if(sig < 0)
      {
-      g_lastBar = 0;                                             // nächsten Tick erneut versuchen
+      ScheduleRetry(bar);                                        // v3.10: gedrosselt
       return;
      }
 
@@ -739,6 +866,13 @@ void OnTick()
          action = "BUY";
          g_wasLong = true;
          g_entryPrice = g_trade.ResultPrice();
+         if(g_entryPrice <= 0.0)                       // v3.10: Rückfall auf den Einstiegskurs der Position
+           {
+            ulong  tkE;
+            double vvE;
+            if(FindPosition(tkE, vvE) && PositionSelectByTicket(tkE))
+               g_entryPrice = PositionGetDouble(POSITION_PRICE_OPEN);
+           }
          g_hh = g_entryPrice;
          g_rebalKey = key;
          g_riskFrac = (dvol > 0.0) ? InpTrailMult * dvol / MathSqrt(12.0) : 0.0;
@@ -764,7 +898,7 @@ void OnTick()
       else
         {
          PrintFormat("Kauf fehlgeschlagen: %d %s", g_trade.ResultRetcode(), g_trade.ResultRetcodeDescription());
-         g_lastBar = 0;                                          // beim nächsten Tick erneut versuchen
+         ScheduleRetry(bar);                                     // v3.10: gedrosselt
         }
      }
    else if(sig == 0 && have)
@@ -779,7 +913,7 @@ void OnTick()
       else
         {
          PrintFormat("Schließen fehlgeschlagen: %d %s", g_trade.ResultRetcode(), g_trade.ResultRetcodeDescription());
-         g_lastBar = 0;
+         ScheduleRetry(bar);
         }
      }
    // Position bleibt offen: Stop nachführen und Gewicht monatlich anpassen
@@ -871,6 +1005,8 @@ void OnTick()
         {
          g_rebalKey = key;
          double target = CalcLots(w);
+         if(target <= 0.0)
+            target = vol;                              // v3.10: Konto zu klein für die Zielgröße, Position unverändert
          double diff = target - vol;
          double vstep = SymbolInfoDouble(g_sym, SYMBOL_VOLUME_STEP);
          if(MathAbs(diff) > 0.15 * vol && vstep > 0.0)
